@@ -1,0 +1,1114 @@
+updated_at: 2026-04-05
+
+layout:
+  repo_root_marker_files:
+    - catalog.yaml
+    - skills
+  active_symlink:
+    path: ~/.agents/skills
+    target_from_repo_root: skills
+    command_template: ln -sfn "$REPO_ROOT/skills" "$HOME/.agents/skills"
+
+maintenance:
+  environment_managers:
+    runtime_and_global_cli: mise
+    python_packages_and_tools: uv
+  source_inventory_policy:
+    remove_unused_sources: true
+    notes:
+      - every source entry must be referenced by at least one skill
+      - if the last skill moves away from a source, remove that source entry in the same maintenance change
+  sudo_policy:
+    apt_commands_require_user_execution: true
+    agent_responsibility:
+      - keep the apt package inventory accurate
+      - compute which apt packages are still referenced
+      - generate the exact sudo command for the user to run
+    notes:
+      - agents should not assume they can execute privileged apt install or apt remove commands themselves
+  python_strategy:
+    default: use the system default Python
+    package_install_mode: uv pip install --system
+    tool_install_mode: uv tool install
+    fallback_when_system_python_missing:
+      - uv python install 3.12
+      - use --python 3.12 only for the fallback case
+  environment_files:
+    mise: mise.toml
+    uv: uv-requirements.txt
+  dependency_reference_rules:
+    depends_on: required shared environment or host prerequisite
+    optional_depends_on: helpful for expanded workflows but not required for the narrowest happy path
+  sync_policy:
+    preferred_copy_command: rsync -a
+    delete_local_extras_by_default: false
+    preserve_local_artifacts:
+      - node_modules committed or bootstrapped inside a skill directory
+      - local package.json or bun.lock files added for one-off helper scripts
+      - Codex-specific wording changes kept intentionally in local skill copies
+    explanation: >-
+      This defines how upstream skill folders are copied into the local mirror. The
+      default policy is copy-forward without deleting local extras, because some
+      skills intentionally keep local bootstrap artifacts or tiny local adaptations.
+  uninstall_policy:
+    remove_shared_environment_only_when_unreferenced: true
+    remove_skill_specific_state_by_default: true
+    notes:
+      - do not remove a shared environment until no skill references it
+      - when uninstalling a skill, remove its skill-specific user data and local state by default
+      - only keep skill-generated user data if the uninstall task explicitly asks to preserve it
+
+cleanup_profiles:
+  none:
+    summary: no known extra cleanup outside the skill directory
+  baoyu-user-config:
+    summary: per-skill baoyu preferences and prompts
+    candidate_paths:
+      - ~/.baoyu-skills/<skill-name>
+      - $XDG_CONFIG_HOME/baoyu-skills/<skill-name>
+    removal_rule: remove by default when uninstalling that specific skill
+  self-improvement-project-state:
+    summary: project learning logs created by actual usage
+    candidate_paths:
+      - .learnings/
+    removal_rule: remove by default when uninstalling the self-improvement skill, unless preservation is explicitly requested
+
+environments:
+  "runtime/node":
+    kind: runtime
+    manager: mise
+    package: node
+    install: mise use -g node@lts
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "runtime/bun":
+    kind: runtime
+    manager: mise
+    package: bun
+    install: mise use -g bun@latest
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "host/system-python":
+    kind: host_runtime
+    manager: system
+    package: python
+    install: use the system default Python if available
+    shared: true
+    managed_by_repo: false
+    removable_when_unreferenced: manual
+    fallback_install:
+      - uv python install 3.12
+      - use --python 3.12 only when the system has no usable Python
+
+  "apt/gh":
+    kind: system_package
+    manager: apt
+    package: gh
+    install: sudo apt install -y gh
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/libreoffice":
+    kind: system_package
+    manager: apt
+    package: libreoffice
+    install: sudo apt install -y libreoffice
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/qpdf":
+    kind: system_package
+    manager: apt
+    package: qpdf
+    install: sudo apt install -y qpdf
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/pdftk-java":
+    kind: system_package
+    manager: apt
+    package: pdftk-java
+    install: sudo apt install -y pdftk-java
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/tesseract-ocr":
+    kind: system_package
+    manager: apt
+    package: tesseract-ocr
+    install: sudo apt install -y tesseract-ocr
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/poppler-utils":
+    kind: system_package
+    manager: apt
+    package: poppler-utils
+    install: sudo apt install -y poppler-utils
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/pandoc":
+    kind: system_package
+    manager: apt
+    package: pandoc
+    install: sudo apt install -y pandoc
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+
+  "mise/npm:defuddle":
+    kind: global_cli
+    manager: mise
+    package: npm:defuddle
+    install: mise use -g npm:defuddle@latest
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "mise/npm:vercel":
+    kind: global_cli
+    manager: mise
+    package: npm:vercel
+    install: mise use -g npm:vercel@latest
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "mise/npm:pnpm":
+    kind: global_cli
+    manager: mise
+    package: npm:pnpm
+    install: mise use -g npm:pnpm@latest
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "mise/npm:docx":
+    kind: global_cli
+    manager: mise
+    package: npm:docx
+    install: mise use -g npm:docx@latest
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "mise/npm:pptxgenjs":
+    kind: global_cli
+    manager: mise
+    package: npm:pptxgenjs
+    install: mise use -g npm:pptxgenjs@latest
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+
+  "uv-tool/browser-use":
+    kind: python_tool
+    manager: uv
+    package: browser-use
+    install: uv tool install browser-use
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+
+  "uv-pkg/lxml":
+    kind: python_package
+    manager: uv
+    package: lxml
+    install: uv pip install --system lxml
+    fallback_install: uv pip install --python 3.12 lxml
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/anthropic":
+    kind: python_package
+    manager: uv
+    package: anthropic
+    install: uv pip install --system anthropic
+    fallback_install: uv pip install --python 3.12 anthropic
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/mcp":
+    kind: python_package
+    manager: uv
+    package: mcp
+    install: uv pip install --system mcp
+    fallback_install: uv pip install --python 3.12 mcp
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/openpyxl":
+    kind: python_package
+    manager: uv
+    package: openpyxl
+    install: uv pip install --system openpyxl
+    fallback_install: uv pip install --python 3.12 openpyxl
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/pandas":
+    kind: python_package
+    manager: uv
+    package: pandas
+    install: uv pip install --system pandas
+    fallback_install: uv pip install --python 3.12 pandas
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/pypdf":
+    kind: python_package
+    manager: uv
+    package: pypdf
+    install: uv pip install --system pypdf
+    fallback_install: uv pip install --python 3.12 pypdf
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/pdfplumber":
+    kind: python_package
+    manager: uv
+    package: pdfplumber
+    install: uv pip install --system pdfplumber
+    fallback_install: uv pip install --python 3.12 pdfplumber
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/pdf2image":
+    kind: python_package
+    manager: uv
+    package: pdf2image
+    install: uv pip install --system pdf2image
+    fallback_install: uv pip install --python 3.12 pdf2image
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/reportlab":
+    kind: python_package
+    manager: uv
+    package: reportlab
+    install: uv pip install --system reportlab
+    fallback_install: uv pip install --python 3.12 reportlab
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/pytesseract":
+    kind: python_package
+    manager: uv
+    package: pytesseract
+    install: uv pip install --system pytesseract
+    fallback_install: uv pip install --python 3.12 pytesseract
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/pillow":
+    kind: python_package
+    manager: uv
+    package: pillow
+    install: uv pip install --system pillow
+    fallback_install: uv pip install --python 3.12 pillow
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/numpy":
+    kind: python_package
+    manager: uv
+    package: numpy
+    install: uv pip install --system numpy
+    fallback_install: uv pip install --python 3.12 numpy
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/imageio":
+    kind: python_package
+    manager: uv
+    package: imageio
+    install: uv pip install --system imageio
+    fallback_install: uv pip install --python 3.12 imageio
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/imageio-ffmpeg":
+    kind: python_package
+    manager: uv
+    package: imageio-ffmpeg
+    install: uv pip install --system imageio-ffmpeg
+    fallback_install: uv pip install --python 3.12 imageio-ffmpeg
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/playwright":
+    kind: python_package
+    manager: uv
+    package: playwright
+    install: uv pip install --system playwright
+    fallback_install: uv pip install --python 3.12 playwright
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/markitdown[pptx]":
+    kind: python_package
+    manager: uv
+    package: markitdown[pptx]
+    install: uv pip install --system "markitdown[pptx]"
+    fallback_install: uv pip install --python 3.12 "markitdown[pptx]"
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+
+  "host/playwright-chromium":
+    kind: browser_payload
+    manager: uv
+    package: playwright chromium payload
+    install: python -m playwright install chromium
+    fallback_install: uv run --python 3.12 python -m playwright install chromium
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "host/chrome-or-chromium":
+    kind: host_application
+    manager: manual
+    package: chrome-or-chromium
+    install: install a compatible Chrome or Chromium browser on the host
+    shared: true
+    managed_by_repo: false
+    removable_when_unreferenced: manual
+  "host/drawio-desktop":
+    kind: host_application
+    manager: manual
+    package: draw.io Desktop
+    install: install draw.io Desktop or CLI on the host if export workflows are required
+    shared: true
+    managed_by_repo: false
+    removable_when_unreferenced: manual
+  "host/obsidian-command":
+    kind: host_application
+    manager: manual
+    package: obsidian command or launcher
+    install: install or expose an obsidian command on the host
+    shared: false
+    managed_by_repo: false
+    removable_when_unreferenced: manual
+
+sources:
+  anthropics-skills:
+    repo_url: https://github.com/anthropics/skills
+    synced_commit: 98669c1
+    upstream_skill_root: skills
+  agent-stuff:
+    repo_url: https://github.com/mitsuhiko/agent-stuff
+    synced_commit: 80e1e96
+    upstream_skill_root: skills
+    notes:
+      - primary public upstream for commit, mermaid, update-changelog, and uv
+      - dot-agent republishes at least some of these skills, but the local copies match agent-stuff exactly
+  obsidian-skills:
+    repo_url: https://github.com/kepano/obsidian-skills
+    synced_commit: fa1e131
+    upstream_skill_root: skills
+    notes:
+      - authoritative public upstream for defuddle, json-canvas, obsidian-bases, obsidian-cli, and obsidian-markdown
+      - the local copies of those five skills currently match this upstream exactly
+  superpowers:
+    repo_url: https://github.com/obra/superpowers
+    synced_commit: b7a8f76
+    upstream_skill_root: skills
+  vercel-agent-skills:
+    repo_url: https://github.com/vercel-labs/agent-skills
+    synced_commit: 73140fc
+    upstream_skill_root: skills
+  vercel-skills:
+    repo_url: https://github.com/vercel-labs/skills
+    synced_commit: 10438af
+    upstream_skill_root: skills
+  browser-use:
+    repo_url: https://github.com/browser-use/browser-use
+    synced_commit: 9b43d66
+    upstream_skill_root: skills
+  self-improving-agent:
+    repo_url: https://github.com/peterskoett/self-improving-agent
+    synced_commit: 8713a3c
+    upstream_skill_root: .
+    notes:
+      - primary public upstream for self-improvement
+      - the skill text still references pskoett/pskoett-ai-skills as older lineage
+  drawio-mcp:
+    repo_url: https://github.com/jgraph/drawio-mcp
+    synced_commit: 5bbc4f1
+    upstream_skill_root: skill-cli
+    notes:
+      - local copy intentionally keeps Codex-specific wording adjustments
+  baoyu-skills:
+    repo_url: https://github.com/JimLiu/baoyu-skills
+    synced_commit: c44a524
+    upstream_skill_root: skills
+    notes:
+      - several skills need one-time local Bun bootstrap after sync
+skills:
+  - name: baoyu-article-illustrator
+    source: baoyu-skills
+    local_path: skills/baoyu-article-illustrator
+    upstream_path: skills/baoyu-article-illustrator
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-article-illustrator
+    purpose: Build structured illustration plans for articles.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+    cleanup_profile: baoyu-user-config
+
+  - name: baoyu-comic
+    source: baoyu-skills
+    local_path: skills/baoyu-comic
+    upstream_path: skills/baoyu-comic
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-comic
+    purpose: Create educational comics and merge generated pages.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+    cleanup_profile: baoyu-user-config
+
+  - name: baoyu-compress-image
+    source: baoyu-skills
+    local_path: skills/baoyu-compress-image
+    upstream_path: skills/baoyu-compress-image
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-compress-image
+    purpose: Compress images to WebP or PNG.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+
+  - name: baoyu-cover-image
+    source: baoyu-skills
+    local_path: skills/baoyu-cover-image
+    upstream_path: skills/baoyu-cover-image
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-cover-image
+    purpose: Generate article cover images with style controls.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+    cleanup_profile: baoyu-user-config
+
+  - name: baoyu-danger-gemini-web
+    source: baoyu-skills
+    local_path: skills/baoyu-danger-gemini-web
+    upstream_path: skills/baoyu-danger-gemini-web
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-danger-gemini-web
+    purpose: Use the reverse-engineered Gemini Web flow for text or image generation.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+      - host/chrome-or-chromium
+
+  - name: baoyu-danger-x-to-markdown
+    source: baoyu-skills
+    local_path: skills/baoyu-danger-x-to-markdown
+    upstream_path: skills/baoyu-danger-x-to-markdown
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-danger-x-to-markdown
+    purpose: Convert X posts or articles into markdown.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+      - host/chrome-or-chromium
+
+  - name: baoyu-format-markdown
+    source: baoyu-skills
+    local_path: skills/baoyu-format-markdown
+    upstream_path: skills/baoyu-format-markdown
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-format-markdown
+    purpose: Reformat plain text or markdown into a polished markdown document.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+
+  - name: baoyu-imagine
+    source: baoyu-skills
+    local_path: skills/baoyu-imagine
+    upstream_path: skills/baoyu-imagine
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-imagine
+    purpose: Generate images through official provider APIs with prompts, references, and batch jobs.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+    cleanup_profile: baoyu-user-config
+
+  - name: baoyu-infographic
+    source: baoyu-skills
+    local_path: skills/baoyu-infographic
+    upstream_path: skills/baoyu-infographic
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-infographic
+    purpose: Build high-density infographics from structured content.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+    cleanup_profile: baoyu-user-config
+
+  - name: baoyu-markdown-to-html
+    source: baoyu-skills
+    local_path: skills/baoyu-markdown-to-html
+    upstream_path: skills/baoyu-markdown-to-html
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-markdown-to-html
+    purpose: Convert markdown into styled HTML, especially for WeChat workflows.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+
+  - name: baoyu-post-to-wechat
+    source: baoyu-skills
+    local_path: skills/baoyu-post-to-wechat
+    upstream_path: skills/baoyu-post-to-wechat
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-post-to-wechat
+    purpose: Publish posts to WeChat Official Account.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+      - host/chrome-or-chromium
+    cleanup_profile: baoyu-user-config
+
+  - name: baoyu-post-to-weibo
+    source: baoyu-skills
+    local_path: skills/baoyu-post-to-weibo
+    upstream_path: skills/baoyu-post-to-weibo
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-post-to-weibo
+    purpose: Publish content and articles to Weibo.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+      - host/chrome-or-chromium
+
+  - name: baoyu-post-to-x
+    source: baoyu-skills
+    local_path: skills/baoyu-post-to-x
+    upstream_path: skills/baoyu-post-to-x
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-post-to-x
+    purpose: Publish posts and long-form content to X.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+      - host/chrome-or-chromium
+
+  - name: baoyu-slide-deck
+    source: baoyu-skills
+    local_path: skills/baoyu-slide-deck
+    upstream_path: skills/baoyu-slide-deck
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-slide-deck
+    purpose: Generate slide deck images from structured content.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+
+  - name: baoyu-translate
+    source: baoyu-skills
+    local_path: skills/baoyu-translate
+    upstream_path: skills/baoyu-translate
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-translate
+    purpose: Translate articles and documents between languages.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+    cleanup_profile: baoyu-user-config
+
+  - name: baoyu-url-to-markdown
+    source: baoyu-skills
+    local_path: skills/baoyu-url-to-markdown
+    upstream_path: skills/baoyu-url-to-markdown
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-url-to-markdown
+    purpose: Fetch web pages with baoyu-fetch and convert them to markdown.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+      - host/chrome-or-chromium
+    cleanup_profile: baoyu-user-config
+    notes:
+      - keep an extra eye on this skill during upgrades because its internal pipeline changed significantly upstream
+
+  - name: baoyu-xhs-images
+    source: baoyu-skills
+    local_path: skills/baoyu-xhs-images
+    upstream_path: skills/baoyu-xhs-images
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-xhs-images
+    purpose: Generate Xiaohongshu-style infographic image series.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+    cleanup_profile: baoyu-user-config
+
+  - name: baoyu-youtube-transcript
+    source: baoyu-skills
+    local_path: skills/baoyu-youtube-transcript
+    upstream_path: skills/baoyu-youtube-transcript
+    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-youtube-transcript
+    purpose: Download YouTube transcripts, subtitles, and cover images.
+    depends_on:
+      - runtime/node
+      - runtime/bun
+
+  - name: brainstorming
+    source: superpowers
+    local_path: skills/brainstorming
+    upstream_path: skills/brainstorming
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/brainstorming
+    purpose: Explore intent and design before implementation.
+    depends_on: []
+
+  - name: brand-guidelines
+    source: anthropics-skills
+    local_path: skills/brand-guidelines
+    upstream_path: skills/brand-guidelines
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/brand-guidelines
+    purpose: Apply Anthropic brand colors and typography.
+    depends_on: []
+
+  - name: browser-use
+    source: browser-use
+    local_path: skills/browser-use
+    upstream_path: skills/browser-use
+    upstream_url: https://github.com/browser-use/browser-use/tree/main/skills/browser-use
+    purpose: Automate websites through the browser-use CLI.
+    depends_on:
+      - host/system-python
+      - uv-tool/browser-use
+    optional_depends_on:
+      - host/chrome-or-chromium
+
+  - name: canvas-design
+    source: anthropics-skills
+    local_path: skills/canvas-design
+    upstream_path: skills/canvas-design
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/canvas-design
+    purpose: Create visual art in PNG or PDF form.
+    depends_on: []
+
+  - name: commit
+    source: agent-stuff
+    local_path: skills/commit
+    upstream_path: skills/commit
+    upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/commit
+    purpose: Create Conventional Commits safely from local changes.
+    depends_on: []
+    notes:
+      - dot-agent also carries a near-identical copy, but the local file matches agent-stuff exactly
+
+  - name: defuddle
+    source: obsidian-skills
+    local_path: skills/defuddle
+    upstream_path: skills/defuddle
+    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle
+    purpose: Extract clean markdown from web pages with Defuddle.
+    depends_on:
+      - runtime/node
+      - mise/npm:defuddle
+    notes:
+      - treat as a maintained wrapper around the CLI rather than a perfect mirror guarantee
+
+  - name: deploy-to-vercel
+    source: vercel-agent-skills
+    local_path: skills/deploy-to-vercel
+    upstream_path: skills/deploy-to-vercel
+    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/deploy-to-vercel
+    purpose: Deploy applications or websites to Vercel.
+    depends_on:
+      - runtime/node
+      - mise/npm:vercel
+
+  - name: dispatching-parallel-agents
+    source: superpowers
+    local_path: skills/dispatching-parallel-agents
+    upstream_path: skills/dispatching-parallel-agents
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents
+    purpose: Break independent work into parallel agent tasks.
+    depends_on: []
+
+  - name: doc-coauthoring
+    source: anthropics-skills
+    local_path: skills/doc-coauthoring
+    upstream_path: skills/doc-coauthoring
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring
+    purpose: Guide structured collaborative documentation writing.
+    depends_on: []
+
+  - name: docx
+    source: anthropics-skills
+    local_path: skills/docx
+    upstream_path: skills/docx
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/docx
+    purpose: Read, create, and edit Word documents.
+    depends_on:
+      - runtime/node
+      - host/system-python
+      - apt/pandoc
+      - apt/libreoffice
+      - apt/poppler-utils
+      - mise/npm:docx
+      - uv-pkg/lxml
+
+  - name: drawio
+    source: drawio-mcp
+    local_path: skills/drawio
+    upstream_path: skill-cli/drawio
+    upstream_url: https://github.com/jgraph/drawio-mcp/tree/main/skill-cli/drawio
+    purpose: Create draw.io diagrams and optionally export them.
+    depends_on: []
+    optional_depends_on:
+      - host/drawio-desktop
+    notes:
+      - local copy keeps Codex-specific wording for file editing and open commands
+
+  - name: executing-plans
+    source: superpowers
+    local_path: skills/executing-plans
+    upstream_path: skills/executing-plans
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/executing-plans
+    purpose: Execute an approved implementation plan with checkpoints.
+    depends_on: []
+
+  - name: find-skills
+    source: vercel-skills
+    local_path: skills/find-skills
+    upstream_path: skills/find-skills
+    upstream_url: https://github.com/vercel-labs/skills/tree/main/skills/find-skills
+    purpose: Discover and install additional public skills.
+    depends_on:
+      - runtime/node
+
+  - name: finishing-a-development-branch
+    source: superpowers
+    local_path: skills/finishing-a-development-branch
+    upstream_path: skills/finishing-a-development-branch
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/finishing-a-development-branch
+    purpose: Decide how to wrap up a finished development branch.
+    depends_on:
+      - apt/gh
+
+  - name: frontend-design
+    source: anthropics-skills
+    local_path: skills/frontend-design
+    upstream_path: skills/frontend-design
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/frontend-design
+    purpose: Create high-quality frontend interfaces and layouts.
+    depends_on: []
+
+  - name: internal-comms
+    source: anthropics-skills
+    local_path: skills/internal-comms
+    upstream_path: skills/internal-comms
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/internal-comms
+    purpose: Draft internal communication artifacts.
+    depends_on: []
+
+  - name: json-canvas
+    source: obsidian-skills
+    local_path: skills/json-canvas
+    upstream_path: skills/json-canvas
+    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas
+    purpose: Create and edit JSON Canvas files.
+    depends_on: []
+
+  - name: mcp-builder
+    source: anthropics-skills
+    local_path: skills/mcp-builder
+    upstream_path: skills/mcp-builder
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/mcp-builder
+    purpose: Build MCP servers and related integrations.
+    depends_on:
+      - host/system-python
+      - uv-pkg/anthropic
+      - uv-pkg/mcp
+
+  - name: mermaid
+    source: agent-stuff
+    local_path: skills/mermaid
+    upstream_path: skills/mermaid
+    upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/mermaid
+    purpose: Create or validate Mermaid diagrams.
+    depends_on:
+      - runtime/node
+
+  - name: obsidian-bases
+    source: obsidian-skills
+    local_path: skills/obsidian-bases
+    upstream_path: skills/obsidian-bases
+    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-bases
+    purpose: Create and edit Obsidian Bases files.
+    depends_on: []
+
+  - name: obsidian-cli
+    source: obsidian-skills
+    local_path: skills/obsidian-cli
+    upstream_path: skills/obsidian-cli
+    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli
+    purpose: Operate on Obsidian vaults from the command line.
+    depends_on:
+      - host/obsidian-command
+
+  - name: obsidian-markdown
+    source: obsidian-skills
+    local_path: skills/obsidian-markdown
+    upstream_path: skills/obsidian-markdown
+    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-markdown
+    purpose: Create and edit Obsidian-flavored markdown.
+    depends_on: []
+
+  - name: pdf
+    source: anthropics-skills
+    local_path: skills/pdf
+    upstream_path: skills/pdf
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/pdf
+    purpose: Read, generate, transform, and OCR PDF files.
+    depends_on:
+      - host/system-python
+      - apt/qpdf
+      - apt/pdftk-java
+      - apt/tesseract-ocr
+      - apt/poppler-utils
+      - uv-pkg/pypdf
+      - uv-pkg/pdfplumber
+      - uv-pkg/pdf2image
+      - uv-pkg/reportlab
+      - uv-pkg/pytesseract
+      - uv-pkg/pillow
+
+  - name: pptx
+    source: anthropics-skills
+    local_path: skills/pptx
+    upstream_path: skills/pptx
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/pptx
+    purpose: Read, create, and edit PowerPoint decks.
+    depends_on:
+      - runtime/node
+      - host/system-python
+      - apt/libreoffice
+      - apt/poppler-utils
+      - mise/npm:pptxgenjs
+      - uv-pkg/markitdown[pptx]
+      - uv-pkg/pillow
+      - uv-pkg/lxml
+
+  - name: receiving-code-review
+    source: superpowers
+    local_path: skills/receiving-code-review
+    upstream_path: skills/receiving-code-review
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/receiving-code-review
+    purpose: Apply code review feedback carefully and verify technical correctness.
+    depends_on:
+      - apt/gh
+
+  - name: requesting-code-review
+    source: superpowers
+    local_path: skills/requesting-code-review
+    upstream_path: skills/requesting-code-review
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/requesting-code-review
+    purpose: Prepare work for a code review pass.
+    depends_on: []
+
+  - name: self-improvement
+    source: self-improving-agent
+    local_path: skills/self-improvement
+    upstream_path: SKILL.md and repo-level assets
+    upstream_url: https://github.com/peterskoett/self-improving-agent
+    purpose: Capture recurring learnings, failures, and corrections.
+    depends_on: []
+    cleanup_profile: self-improvement-project-state
+
+  - name: slack-gif-creator
+    source: anthropics-skills
+    local_path: skills/slack-gif-creator
+    upstream_path: skills/slack-gif-creator
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/slack-gif-creator
+    purpose: Create animated GIFs optimized for Slack.
+    depends_on:
+      - host/system-python
+      - uv-pkg/imageio
+      - uv-pkg/imageio-ffmpeg
+      - uv-pkg/numpy
+      - uv-pkg/pillow
+
+  - name: subagent-driven-development
+    source: superpowers
+    local_path: skills/subagent-driven-development
+    upstream_path: skills/subagent-driven-development
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/subagent-driven-development
+    purpose: Execute a plan by dispatching focused subagents.
+    depends_on: []
+
+  - name: systematic-debugging
+    source: superpowers
+    local_path: skills/systematic-debugging
+    upstream_path: skills/systematic-debugging
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/systematic-debugging
+    purpose: Debug bugs and failures methodically.
+    depends_on: []
+
+  - name: test-driven-development
+    source: superpowers
+    local_path: skills/test-driven-development
+    upstream_path: skills/test-driven-development
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/test-driven-development
+    purpose: Use a TDD workflow for feature or bugfix implementation.
+    depends_on: []
+
+  - name: theme-factory
+    source: anthropics-skills
+    local_path: skills/theme-factory
+    upstream_path: skills/theme-factory
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/theme-factory
+    purpose: Apply reusable visual themes to artifacts.
+    depends_on: []
+
+  - name: update-changelog
+    source: agent-stuff
+    local_path: skills/update-changelog
+    upstream_path: skills/update-changelog
+    upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/update-changelog
+    purpose: Update changelog entries between releases.
+    depends_on: []
+    notes:
+      - dot-agent also carries a near-identical copy, but the local file matches agent-stuff exactly
+
+  - name: using-git-worktrees
+    source: superpowers
+    local_path: skills/using-git-worktrees
+    upstream_path: skills/using-git-worktrees
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/using-git-worktrees
+    purpose: Create and manage isolated git worktrees.
+    depends_on: []
+
+  - name: using-superpowers
+    source: superpowers
+    local_path: skills/using-superpowers
+    upstream_path: skills/using-superpowers
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/using-superpowers
+    purpose: Enforce the skill-first workflow at the start of a task.
+    depends_on: []
+
+  - name: uv
+    source: agent-stuff
+    local_path: skills/uv
+    upstream_path: skills/uv
+    upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/uv
+    purpose: Use uv instead of pip, python, or venv.
+    depends_on: []
+    notes:
+      - this local file matches the public agent-stuff copy exactly
+
+  - name: vercel-cli-with-tokens
+    source: vercel-agent-skills
+    local_path: skills/vercel-cli-with-tokens
+    upstream_path: skills/vercel-cli-with-tokens
+    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/vercel-cli-with-tokens
+    purpose: Use the Vercel CLI with access tokens.
+    depends_on:
+      - runtime/node
+      - mise/npm:vercel
+
+  - name: vercel-composition-patterns
+    source: vercel-agent-skills
+    local_path: skills/vercel-composition-patterns
+    upstream_path: skills/composition-patterns
+    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns
+    purpose: Apply scalable React composition patterns.
+    depends_on: []
+    notes:
+      - local directory keeps the vercel-prefixed name for compatibility
+
+  - name: vercel-react-best-practices
+    source: vercel-agent-skills
+    local_path: skills/vercel-react-best-practices
+    upstream_path: skills/react-best-practices
+    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices
+    purpose: Use Vercel guidance for performant React and Next.js code.
+    depends_on: []
+    notes:
+      - local directory keeps the vercel-prefixed name for compatibility
+
+  - name: vercel-react-native-skills
+    source: vercel-agent-skills
+    local_path: skills/vercel-react-native-skills
+    upstream_path: skills/react-native-skills
+    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-native-skills
+    purpose: Apply React Native and Expo best practices.
+    depends_on: []
+    notes:
+      - local directory keeps the vercel-prefixed name for compatibility
+
+  - name: vercel-react-view-transitions
+    source: vercel-agent-skills
+    local_path: skills/vercel-react-view-transitions
+    upstream_path: skills/react-view-transitions
+    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-view-transitions
+    purpose: Apply React View Transition patterns and native-feeling route animations.
+    depends_on: []
+    notes:
+      - local directory keeps the vercel-prefixed name for compatibility
+
+  - name: verification-before-completion
+    source: superpowers
+    local_path: skills/verification-before-completion
+    upstream_path: skills/verification-before-completion
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/verification-before-completion
+    purpose: Require fresh verification before claiming success.
+    depends_on: []
+
+  - name: web-artifacts-builder
+    source: anthropics-skills
+    local_path: skills/web-artifacts-builder
+    upstream_path: skills/web-artifacts-builder
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/web-artifacts-builder
+    purpose: Build complex HTML artifacts using modern frontend tooling.
+    depends_on:
+      - runtime/node
+      - mise/npm:pnpm
+
+  - name: web-design-guidelines
+    source: vercel-agent-skills
+    local_path: skills/web-design-guidelines
+    upstream_path: skills/web-design-guidelines
+    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines
+    purpose: Review UI work against web interface guidelines.
+    depends_on: []
+    notes:
+      - the wrapper is local, but its effective rule set can evolve upstream independently
+
+  - name: webapp-testing
+    source: anthropics-skills
+    local_path: skills/webapp-testing
+    upstream_path: skills/webapp-testing
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/webapp-testing
+    purpose: Test local web apps with Playwright.
+    depends_on:
+      - host/system-python
+      - uv-pkg/playwright
+      - host/playwright-chromium
+
+  - name: writing-plans
+    source: superpowers
+    local_path: skills/writing-plans
+    upstream_path: skills/writing-plans
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/writing-plans
+    purpose: Turn an approved spec into an execution plan.
+    depends_on: []
+
+  - name: writing-skills
+    source: superpowers
+    local_path: skills/writing-skills
+    upstream_path: skills/writing-skills
+    upstream_url: https://github.com/obra/superpowers/tree/main/skills/writing-skills
+    purpose: Create or edit skills safely and systematically.
+    depends_on: []
+
+  - name: xlsx
+    source: anthropics-skills
+    local_path: skills/xlsx
+    upstream_path: skills/xlsx
+    upstream_url: https://github.com/anthropics/skills/tree/main/skills/xlsx
+    purpose: Create, read, and modify spreadsheet files.
+    depends_on:
+      - host/system-python
+      - apt/libreoffice
+      - uv-pkg/openpyxl
+      - uv-pkg/pandas
+      - uv-pkg/lxml

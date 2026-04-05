@@ -1,0 +1,16 @@
+lxml
+anthropic
+mcp
+openpyxl
+pandas
+pypdf
+pdfplumber
+pdf2image
+reportlab
+pytesseract
+pillow
+numpy
+imageio
+imageio-ffmpeg
+playwright
+markitdown[pptx]
