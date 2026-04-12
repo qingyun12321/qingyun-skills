@@ -1,4 +1,4 @@
-updated_at: 2026-04-05
+updated_at: 2026-04-12
 
 layout:
   repo_root_marker_files:
@@ -398,7 +398,7 @@ environments:
 sources:
   anthropics-skills:
     repo_url: https://github.com/anthropics/skills
-    synced_commit: 98669c1
+    synced_commit: 12ab35c
     upstream_skill_root: skills
   agent-stuff:
     repo_url: https://github.com/mitsuhiko/agent-stuff
@@ -416,7 +416,7 @@ sources:
       - the local copies of those five skills currently match this upstream exactly
   superpowers:
     repo_url: https://github.com/obra/superpowers
-    synced_commit: b7a8f76
+    synced_commit: 917e5f5
     upstream_skill_root: skills
   vercel-agent-skills:
     repo_url: https://github.com/vercel-labs/agent-skills
@@ -424,11 +424,11 @@ sources:
     upstream_skill_root: skills
   vercel-skills:
     repo_url: https://github.com/vercel-labs/skills
-    synced_commit: 10438af
+    synced_commit: 004c738
     upstream_skill_root: skills
   browser-use:
     repo_url: https://github.com/browser-use/browser-use
-    synced_commit: 9b43d66
+    synced_commit: 1324a88
     upstream_skill_root: skills
   self-improving-agent:
     repo_url: https://github.com/peterskoett/self-improving-agent
@@ -439,13 +439,13 @@ sources:
       - the skill text still references pskoett/pskoett-ai-skills as older lineage
   drawio-mcp:
     repo_url: https://github.com/jgraph/drawio-mcp
-    synced_commit: 5bbc4f1
+    synced_commit: 07a787c
     upstream_skill_root: skill-cli
     notes:
       - local copy intentionally keeps Codex-specific wording adjustments
   baoyu-skills:
     repo_url: https://github.com/JimLiu/baoyu-skills
-    synced_commit: c44a524
+    synced_commit: 4d465d5
     upstream_skill_root: skills
     notes:
       - several skills need one-time local Bun bootstrap after sync

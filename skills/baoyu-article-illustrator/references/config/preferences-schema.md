@@ -20,6 +20,8 @@ preferred_style:
   name: null              # Built-in or custom style name
   description: ""         # Override/notes
 
+preferred_palette: null   # Built-in palette name (macaron|warm|neon) or null
+
 language: null            # zh|en|ja|ko|auto
 
 default_output_dir: null  # same-dir|illustrations-subdir|independent
@@ -47,6 +49,7 @@ custom_styles:
 | `watermark.position` | enum | bottom-right | Position on image |
 | `preferred_style.name` | string | null | Style name or null |
 | `preferred_style.description` | string | "" | Custom notes/override |
+| `preferred_palette` | string | null | Palette override (macaron, warm, neon, or null) |
 | `language` | string | null | Output language (null = auto-detect) |
 | `default_output_dir` | enum | null | Output directory preference (null = ask each time) |
 | `custom_styles` | array | [] | User-defined styles |

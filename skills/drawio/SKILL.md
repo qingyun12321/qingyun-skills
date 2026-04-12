@@ -11,16 +11,17 @@ Generate draw.io diagrams as native `.drawio` files. Optionally export to PNG, S
 
 This upstream skill was written for Claude Code. In Codex, interpret the tool references like this:
 
-- "Write tool" -> create or edit the `.drawio` file with Codex file-editing tools such as `apply_patch`
-- "Open the result" -> use a platform-appropriate shell open command (`open`, `xdg-open`, or `cmd.exe /c start` on WSL2/Windows)
+- "Write tool" means creating or editing the `.drawio` file with Codex file-editing tools such as `apply_patch`
+- "Open the result" means using a platform-appropriate shell open command like `open`, `xdg-open`, or `cmd.exe /c start` on WSL2/Windows
 - If opening fails, print the absolute file path so the user can open it manually
 
 ## How to create a diagram
 
 1. **Generate draw.io XML** in mxGraphModel format for the requested diagram
 2. **Write the XML** to a `.drawio` file in the current working directory using the available local file-editing tools
-3. **If the user requested an export format** (png, svg, pdf), locate the draw.io CLI (see below), export with `--embed-diagram`, then delete the source `.drawio` file. If the CLI is not found, keep the `.drawio` file and tell the user they can install the draw.io desktop app to enable export, or open the `.drawio` file directly
-4. **Open the result** — the exported file if exported, or the `.drawio` file otherwise. In Codex, do this with a shell open command. If the open command fails, print the file path so the user can open it manually
+3. **Post-process edge routing** (optional): If `npx @drawio/postprocess` is available, run it on the `.drawio` file to optimize edge routing (simplify waypoints, fix edge-vertex collisions, straighten approach angles). Skip silently if not available — do not install it or ask the user about it
+4. **If the user requested an export format** (png, svg, pdf), locate the draw.io CLI (see below), export with `--embed-diagram`, then delete the source `.drawio` file. If the CLI is not found, keep the `.drawio` file and tell the user they can install the draw.io desktop app to enable export, or open the `.drawio` file directly
+5. **Open the result** — the exported file if exported, or the `.drawio` file otherwise. In Codex, do this with a shell open command. If the open command fails, print the file path so the user can open it manually
 
 ## Choosing the output format
 

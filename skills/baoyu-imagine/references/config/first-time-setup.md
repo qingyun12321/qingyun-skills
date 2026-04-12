@@ -53,10 +53,12 @@ options:
     description: "Router for Gemini/FLUX/OpenAI-compatible image models"
   - label: "DashScope"
     description: "Alibaba Cloud - Qwen-Image, strong Chinese/English text rendering"
+  - label: "Z.AI"
+    description: "GLM-image, strong poster and text-heavy image generation"
   - label: "MiniMax"
     description: "MiniMax image generation with subject-reference character workflows"
   - label: "Replicate"
-    description: "Community models - nano-banana-pro, flexible model selection"
+    description: "Curated Replicate image families - nano-banana-2, Seedream, and Wan image models"
 ```
 
 ### Question 2: Default Google Model
@@ -119,6 +121,20 @@ options:
     description: "Faster variant, use aspect ratio instead of custom size"
 ```
 
+### Question 2e: Default Z.AI Model
+
+Only show if user selected Z.AI.
+
+```yaml
+header: "Z.AI Model"
+question: "Default Z.AI image generation model?"
+options:
+  - label: "glm-image (Recommended)"
+    description: "Best default for posters, diagrams, and text-heavy images"
+  - label: "cogview-4-250304"
+    description: "Legacy Z.AI image model on the same endpoint"
+```
+
 ### Question 3: Default Quality
 
 ```yaml
@@ -159,16 +175,20 @@ default_provider: [selected provider or null]
 default_quality: [selected quality]
 default_aspect_ratio: null
 default_image_size: null
+default_image_api_dialect: null
 default_model:
   google: [selected google model or null]
   openai: null
   azure: [selected azure deployment or null]
   openrouter: [selected openrouter model or null]
   dashscope: null
+  zai: [selected Z.AI model or null]
   minimax: [selected minimax model or null]
   replicate: null
 ---
 ```
+
+If the user selects `OpenAI` but says their endpoint is only OpenAI-compatible and fronts another image model family, save `default_image_api_dialect: ratio-metadata` when they explicitly confirm the gateway expects aspect-ratio `size` plus metadata-based resolution. Otherwise leave it `null` / `openai-native`.
 
 ## Flow 2: EXTEND.md Exists, Model Null
 
@@ -257,16 +277,38 @@ Notes for DashScope setup:
 - `qwen-image-max` / `qwen-image-plus` / `qwen-image` only support five fixed sizes: `1664*928`, `1472*1104`, `1328*1328`, `1104*1472`, `928*1664`.
 - In `baoyu-imagine`, `quality` is a compatibility preset. It is not a native DashScope parameter.
 
+### Z.AI Model Selection
+
+```yaml
+header: "Z.AI Model"
+question: "Choose a default Z.AI image generation model?"
+options:
+  - label: "glm-image (Recommended)"
+    description: "Current flagship image model with better text rendering and poster layouts"
+  - label: "cogview-4-250304"
+    description: "Legacy model on the sync image endpoint"
+```
+
+Notes for Z.AI setup:
+
+- Prefer `glm-image` for posters, diagrams, and Chinese/English text-heavy layouts.
+- In `baoyu-imagine`, Z.AI currently exposes text-to-image only; reference images are not wired for this provider.
+- The sync Z.AI image API returns a downloadable image URL, which the runtime saves locally after download.
+
 ### Replicate Model Selection
 
 ```yaml
 header: "Replicate Model"
 question: "Choose a default Replicate image generation model?"
 options:
-  - label: "google/nano-banana-pro (Recommended)"
-    description: "Google's fast image model on Replicate"
-  - label: "google/nano-banana"
-    description: "Google's base image model on Replicate"
+  - label: "google/nano-banana-2 (Recommended)"
+    description: "Current default for general Replicate image generation in baoyu-imagine"
+  - label: "bytedance/seedream-4.5"
+    description: "Replicate Seedream 4.5 with validated local size/ref guardrails"
+  - label: "bytedance/seedream-5-lite"
+    description: "Replicate Seedream 5 Lite with validated local size/ref guardrails"
+  - label: "wan-video/wan-2.7-image-pro"
+    description: "Replicate Wan 2.7 Image Pro with 4K text-to-image support"
 ```
 
 ### MiniMax Model Selection
@@ -302,6 +344,7 @@ default_model:
   azure: [value or null]
   openrouter: [value or null]
   dashscope: [value or null]
+  zai: [value or null]
   minimax: [value or null]
   replicate: [value or null]
 ```

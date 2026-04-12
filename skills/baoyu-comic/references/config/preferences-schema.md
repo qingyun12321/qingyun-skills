@@ -16,9 +16,9 @@ watermark:
   content: ""
   position: bottom-right  # bottom-right|bottom-left|bottom-center|top-right
 
-preferred_art: null       # ligne-claire|manga|realistic|ink-brush|chalk
+preferred_art: null       # ligne-claire|manga|realistic|ink-brush|chalk|minimalist
 preferred_tone: null      # neutral|warm|dramatic|romantic|energetic|vintage|action
-preferred_layout: null    # standard|cinematic|dense|splash|mixed|webtoon
+preferred_layout: null    # standard|cinematic|dense|splash|mixed|webtoon|four-panel
 preferred_aspect: null    # 3:4|4:3|16:9
 
 language: null            # zh|en|ja|ko|auto
@@ -41,7 +41,7 @@ character_presets:
 | `watermark.enabled` | bool | false | Enable watermark |
 | `watermark.content` | string | "" | Watermark text (@username or custom) |
 | `watermark.position` | enum | bottom-right | Position on image |
-| `preferred_art` | string | null | Art style (ligne-claire, manga, realistic, ink-brush, chalk) |
+| `preferred_art` | string | null | Art style (ligne-claire, manga, realistic, ink-brush, chalk, minimalist) |
 | `preferred_tone` | string | null | Tone (neutral, warm, dramatic, romantic, energetic, vintage, action) |
 | `preferred_layout` | string | null | Layout preference or null |
 | `preferred_aspect` | string | null | Aspect ratio (3:4, 4:3, 16:9) |
@@ -57,6 +57,7 @@ character_presets:
 | `realistic` | 写实 | Digital painting, realistic proportions |
 | `ink-brush` | 水墨 | Chinese brush strokes, ink wash effects |
 | `chalk` | 粉笔 | Chalkboard aesthetic, hand-drawn warmth |
+| `minimalist` | 极简 | Clean black line art, limited spot color, stick-figure characters |
 
 ## Tone Options
 

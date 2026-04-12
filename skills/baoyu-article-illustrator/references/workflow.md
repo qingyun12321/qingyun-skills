@@ -211,9 +211,22 @@ If no `preferred_style` (present Core Styles first):
 | `poster` | screen-print | Opinion, editorial, cultural, cinematic |
 
 Style selection based on Type × Style compatibility matrix (styles.md).
-Full specs: `styles/<style>.md`
+**In Step 5.1**, read `styles/<style>.md` for visual elements and rendering rules.
 
-### Q4: Image Text Language ⚠️ REQUIRED when article language ≠ EXTEND.md `language`
+### Q4: Palette (optional)
+
+If preset did not specify a palette, and the user may benefit from a palette override, offer available palettes:
+
+- Default (use style's built-in colors) (Recommended)
+- `macaron` — soft pastel blocks on warm cream
+- `warm` — warm earth tones, no cool colors
+- `neon` — vibrant neon on dark backgrounds
+
+**Skip if**: preset already resolved palette, or `preferred_palette` set in EXTEND.md.
+
+See Palette Gallery in [styles.md](styles.md#palette-gallery) and full specs in `palettes/<palette>.md`.
+
+### Q5: Image Text Language ⚠️ REQUIRED when article language ≠ EXTEND.md `language`
 
 Detect article language from content. If different from EXTEND.md `language` setting, MUST ask:
 - Article language (match article content) (Recommended)
@@ -294,16 +307,18 @@ For each illustration in the outline:
    style: custom-flat-vector
    ---
    ```
-3. **Follow type-specific template** from [prompt-construction.md](prompt-construction.md)
-4. **Prompt quality requirements** (all REQUIRED):
+3. **Load style specs**: Read `styles/<style>.md` for visual elements, style rules, and rendering instructions
+4. **Load palette specs** (if palette specified): Read `palettes/<palette>.md` for colors and background. Palette colors **replace** the style's default Color Palette. If no palette specified, use the style's built-in colors.
+5. **Follow type-specific template** from [prompt-construction.md](prompt-construction.md), using rendering from style + colors from palette (or style default)
+6. **Prompt quality requirements** (all REQUIRED):
    - `Layout`: Describe overall composition (grid / radial / hierarchical / left-right / top-down)
    - `ZONES`: Describe each visual area with specific content, not vague descriptions
    - `LABELS`: Use **actual numbers, terms, metrics, quotes from the article** — NOT generic placeholders
-   - `COLORS`: Specify hex codes with semantic meaning (e.g., `Coral (#E07A5F) for emphasis`)
-   - `STYLE`: Describe line treatment, texture, mood, character rendering
+   - `COLORS`: Specify hex codes from palette (or style default) with semantic meaning
+   - `STYLE`: Describe line treatment, texture, mood, character rendering per style rules
    - `ASPECT`: Specify ratio (e.g., `16:9`)
-5. **Apply defaults**: composition requirements, character rendering, text guidelines, watermark
-6. **Backup rule**: If prompt file exists, rename to `prompts/NN-{type}-{slug}-backup-YYYYMMDD-HHMMSS.md`
+7. **Apply defaults**: composition requirements, character rendering, text guidelines, watermark
+8. **Backup rule**: If prompt file exists, rename to `prompts/NN-{type}-{slug}-backup-YYYYMMDD-HHMMSS.md`
 
 **Verification** ⛔: Before proceeding to 5.2, confirm ALL prompt files exist:
 ```
