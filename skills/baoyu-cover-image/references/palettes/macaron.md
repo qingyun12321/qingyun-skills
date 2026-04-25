@@ -21,6 +21,10 @@ Soft macaron pastel color blocks on warm cream
 - Soft shadows, no hard edges
 - Gentle gradient transitions between zones
 
+## Semantic Constraint
+
+Do NOT render color names, hex codes, or role labels as visible text in the image.
+
 ## Best For
 
 Educational content, knowledge sharing, concept explainers, tutorials, tech summaries, onboarding materials

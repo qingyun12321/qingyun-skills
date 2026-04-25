@@ -24,6 +24,10 @@ Soft macaron pastel color blocks on warm cream
 
 Coral Red (#E8655A) for key data, warnings, and emphasis highlights. Use sparingly — one or two elements per illustration.
 
+## Semantic Constraint
+
+Soft pastel macaron color palette. Use block colors as rounded card backgrounds for distinct information sections. Accent coral red sparingly for emphasis on key terms only. Do NOT render color names, hex codes, or role labels as visible text in the image.
+
 ## Best For
 
 Educational content, knowledge sharing, concept explainers, tutorials, tech summaries, onboarding materials

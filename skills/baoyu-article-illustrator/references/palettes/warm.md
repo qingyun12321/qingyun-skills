@@ -23,6 +23,10 @@ Warm earth tones on soft peach, no cool colors
 
 Warm Orange (#ED8936) for primary emphasis. Warm-only palette — no cool colors (no green, blue, purple). Modern-retro feel.
 
+## Semantic Constraint
+
+Warm earth tone palette. Warm-only — no cool colors (no green, blue, purple). Do NOT render color names, hex codes, or role labels as visible text in the image.
+
 ## Best For
 
 Product showcases, team introductions, feature grids, brand content, personal growth, lifestyle

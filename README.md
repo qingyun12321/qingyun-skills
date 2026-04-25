@@ -114,7 +114,7 @@ Suggested command for the user to run:
 ```bash
 sudo apt update
 sudo apt install -y \
-  gh libreoffice qpdf pdftk-java tesseract-ocr poppler-utils pandoc
+  libreoffice qpdf pdftk-java tesseract-ocr poppler-utils pandoc
 ```
 
 Host applications that are useful but not managed by this repo:
@@ -301,12 +301,6 @@ These skills may store preferences or prompts outside the repo:
 
 Delete these by default when uninstalling that skill.
 
-### `self-improvement-project-state`
-
-This may involve `.learnings/` in a project or workspace.
-
-Delete it by default when uninstalling `self-improvement`, unless the task explicitly says to preserve historical learning logs.
-
 ## Verification
 
 Run this after install, upgrade, or uninstall work:
@@ -332,7 +326,6 @@ PY
 test -L "$HOME/.agents/skills"
 test "$(readlink -f "$HOME/.agents/skills")" = "$REPO_ROOT/skills"
 ls -1 "$HOME/.agents/skills" | wc -l
-test -f "$HOME/.agents/skills/using-superpowers/SKILL.md"
 ```
 
 ## Short Decision Rules

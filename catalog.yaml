@@ -1,4 +1,4 @@
-updated_at: 2026-04-12
+updated_at: 2026-04-25
 
 layout:
   repo_root_marker_files:
@@ -67,11 +67,6 @@ cleanup_profiles:
       - ~/.baoyu-skills/<skill-name>
       - $XDG_CONFIG_HOME/baoyu-skills/<skill-name>
     removal_rule: remove by default when uninstalling that specific skill
-  self-improvement-project-state:
-    summary: project learning logs created by actual usage
-    candidate_paths:
-      - .learnings/
-    removal_rule: remove by default when uninstalling the self-improvement skill, unless preservation is explicitly requested
 
 environments:
   "runtime/node":
@@ -102,15 +97,6 @@ environments:
       - uv python install 3.12
       - use --python 3.12 only when the system has no usable Python
 
-  "apt/gh":
-    kind: system_package
-    manager: apt
-    package: gh
-    install: sudo apt install -y gh
-    execution: user_manual_sudo_required
-    shared: true
-    managed_by_repo: true
-    removable_when_unreferenced: true
   "apt/libreoffice":
     kind: system_package
     manager: apt
@@ -165,7 +151,6 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-
   "mise/npm:defuddle":
     kind: global_cli
     manager: mise
@@ -215,7 +200,6 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-
   "uv-pkg/lxml":
     kind: python_package
     manager: uv
@@ -398,11 +382,11 @@ environments:
 sources:
   anthropics-skills:
     repo_url: https://github.com/anthropics/skills
-    synced_commit: 12ab35c
+    synced_commit: 5128e18
     upstream_skill_root: skills
   agent-stuff:
     repo_url: https://github.com/mitsuhiko/agent-stuff
-    synced_commit: 80e1e96
+    synced_commit: 521cafd
     upstream_skill_root: skills
     notes:
       - primary public upstream for commit, mermaid, update-changelog, and uv
@@ -414,38 +398,27 @@ sources:
     notes:
       - authoritative public upstream for defuddle, json-canvas, obsidian-bases, obsidian-cli, and obsidian-markdown
       - the local copies of those five skills currently match this upstream exactly
-  superpowers:
-    repo_url: https://github.com/obra/superpowers
-    synced_commit: 917e5f5
-    upstream_skill_root: skills
   vercel-agent-skills:
     repo_url: https://github.com/vercel-labs/agent-skills
-    synced_commit: 73140fc
+    synced_commit: ce3e64e
     upstream_skill_root: skills
   vercel-skills:
     repo_url: https://github.com/vercel-labs/skills
-    synced_commit: 004c738
+    synced_commit: 5516b8a
     upstream_skill_root: skills
   browser-use:
     repo_url: https://github.com/browser-use/browser-use
-    synced_commit: 1324a88
+    synced_commit: f3878b0
     upstream_skill_root: skills
-  self-improving-agent:
-    repo_url: https://github.com/peterskoett/self-improving-agent
-    synced_commit: 8713a3c
-    upstream_skill_root: .
-    notes:
-      - primary public upstream for self-improvement
-      - the skill text still references pskoett/pskoett-ai-skills as older lineage
   drawio-mcp:
     repo_url: https://github.com/jgraph/drawio-mcp
-    synced_commit: 07a787c
+    synced_commit: b3bcf98
     upstream_skill_root: skill-cli
     notes:
       - local copy intentionally keeps Codex-specific wording adjustments
   baoyu-skills:
     repo_url: https://github.com/JimLiu/baoyu-skills
-    synced_commit: 4d465d5
+    synced_commit: 31d728b
     upstream_skill_root: skills
     notes:
       - several skills need one-time local Bun bootstrap after sync
@@ -647,14 +620,6 @@ skills:
       - runtime/node
       - runtime/bun
 
-  - name: brainstorming
-    source: superpowers
-    local_path: skills/brainstorming
-    upstream_path: skills/brainstorming
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/brainstorming
-    purpose: Explore intent and design before implementation.
-    depends_on: []
-
   - name: brand-guidelines
     source: anthropics-skills
     local_path: skills/brand-guidelines
@@ -715,14 +680,6 @@ skills:
       - runtime/node
       - mise/npm:vercel
 
-  - name: dispatching-parallel-agents
-    source: superpowers
-    local_path: skills/dispatching-parallel-agents
-    upstream_path: skills/dispatching-parallel-agents
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents
-    purpose: Break independent work into parallel agent tasks.
-    depends_on: []
-
   - name: doc-coauthoring
     source: anthropics-skills
     local_path: skills/doc-coauthoring
@@ -758,14 +715,6 @@ skills:
     notes:
       - local copy keeps Codex-specific wording for file editing and open commands
 
-  - name: executing-plans
-    source: superpowers
-    local_path: skills/executing-plans
-    upstream_path: skills/executing-plans
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/executing-plans
-    purpose: Execute an approved implementation plan with checkpoints.
-    depends_on: []
-
   - name: find-skills
     source: vercel-skills
     local_path: skills/find-skills
@@ -774,15 +723,6 @@ skills:
     purpose: Discover and install additional public skills.
     depends_on:
       - runtime/node
-
-  - name: finishing-a-development-branch
-    source: superpowers
-    local_path: skills/finishing-a-development-branch
-    upstream_path: skills/finishing-a-development-branch
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/finishing-a-development-branch
-    purpose: Decide how to wrap up a finished development branch.
-    depends_on:
-      - apt/gh
 
   - name: frontend-design
     source: anthropics-skills
@@ -888,32 +828,6 @@ skills:
       - uv-pkg/pillow
       - uv-pkg/lxml
 
-  - name: receiving-code-review
-    source: superpowers
-    local_path: skills/receiving-code-review
-    upstream_path: skills/receiving-code-review
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/receiving-code-review
-    purpose: Apply code review feedback carefully and verify technical correctness.
-    depends_on:
-      - apt/gh
-
-  - name: requesting-code-review
-    source: superpowers
-    local_path: skills/requesting-code-review
-    upstream_path: skills/requesting-code-review
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/requesting-code-review
-    purpose: Prepare work for a code review pass.
-    depends_on: []
-
-  - name: self-improvement
-    source: self-improving-agent
-    local_path: skills/self-improvement
-    upstream_path: SKILL.md and repo-level assets
-    upstream_url: https://github.com/peterskoett/self-improving-agent
-    purpose: Capture recurring learnings, failures, and corrections.
-    depends_on: []
-    cleanup_profile: self-improvement-project-state
-
   - name: slack-gif-creator
     source: anthropics-skills
     local_path: skills/slack-gif-creator
@@ -926,30 +840,6 @@ skills:
       - uv-pkg/imageio-ffmpeg
       - uv-pkg/numpy
       - uv-pkg/pillow
-
-  - name: subagent-driven-development
-    source: superpowers
-    local_path: skills/subagent-driven-development
-    upstream_path: skills/subagent-driven-development
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/subagent-driven-development
-    purpose: Execute a plan by dispatching focused subagents.
-    depends_on: []
-
-  - name: systematic-debugging
-    source: superpowers
-    local_path: skills/systematic-debugging
-    upstream_path: skills/systematic-debugging
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/systematic-debugging
-    purpose: Debug bugs and failures methodically.
-    depends_on: []
-
-  - name: test-driven-development
-    source: superpowers
-    local_path: skills/test-driven-development
-    upstream_path: skills/test-driven-development
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/test-driven-development
-    purpose: Use a TDD workflow for feature or bugfix implementation.
-    depends_on: []
 
   - name: theme-factory
     source: anthropics-skills
@@ -968,22 +858,6 @@ skills:
     depends_on: []
     notes:
       - dot-agent also carries a near-identical copy, but the local file matches agent-stuff exactly
-
-  - name: using-git-worktrees
-    source: superpowers
-    local_path: skills/using-git-worktrees
-    upstream_path: skills/using-git-worktrees
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/using-git-worktrees
-    purpose: Create and manage isolated git worktrees.
-    depends_on: []
-
-  - name: using-superpowers
-    source: superpowers
-    local_path: skills/using-superpowers
-    upstream_path: skills/using-superpowers
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/using-superpowers
-    purpose: Enforce the skill-first workflow at the start of a task.
-    depends_on: []
 
   - name: uv
     source: agent-stuff
@@ -1045,14 +919,6 @@ skills:
     notes:
       - local directory keeps the vercel-prefixed name for compatibility
 
-  - name: verification-before-completion
-    source: superpowers
-    local_path: skills/verification-before-completion
-    upstream_path: skills/verification-before-completion
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/verification-before-completion
-    purpose: Require fresh verification before claiming success.
-    depends_on: []
-
   - name: web-artifacts-builder
     source: anthropics-skills
     local_path: skills/web-artifacts-builder
@@ -1083,22 +949,6 @@ skills:
       - host/system-python
       - uv-pkg/playwright
       - host/playwright-chromium
-
-  - name: writing-plans
-    source: superpowers
-    local_path: skills/writing-plans
-    upstream_path: skills/writing-plans
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/writing-plans
-    purpose: Turn an approved spec into an execution plan.
-    depends_on: []
-
-  - name: writing-skills
-    source: superpowers
-    local_path: skills/writing-skills
-    upstream_path: skills/writing-skills
-    upstream_url: https://github.com/obra/superpowers/tree/main/skills/writing-skills
-    purpose: Create or edit skills safely and systematically.
-    depends_on: []
 
   - name: xlsx
     source: anthropics-skills

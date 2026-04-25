@@ -22,6 +22,10 @@ Black ink on pure white with sparse semantic accent colors
 
 Use black ink for all structural elements — lines, text, figures. Accent colors appear only for semantic highlighting: coral red for risks/gaps/problems, muted teal for positive/solution/after-states, dusty lavender for neutral category tags. Total colored pixels must remain under 10% of canvas. Pale gray may back a subtle zone but must never dominate.
 
+## Semantic Constraint
+
+Black ink on white canvas. Accent colors for semantic highlighting only — total colored pixels under 10% of canvas. Do NOT render color names, hex codes, or role labels as visible text in the image.
+
 ## Compatible With
 
 - `ink-notes` (primary, default pairing)
