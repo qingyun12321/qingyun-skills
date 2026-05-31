@@ -237,7 +237,6 @@ Examples:
 
 - `mise uninstall node`
 - `mise uninstall npm:defuddle`
-- `mise uninstall npm:vercel`
 
 ### Remove a `uv` tool
 

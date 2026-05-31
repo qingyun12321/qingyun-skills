@@ -1,7 +1,6 @@
 [tools]
 node = "lts"
 "npm:defuddle" = "latest"
-"npm:vercel" = "latest"
 "npm:pnpm" = "latest"
 "npm:docx" = "latest"
 "npm:pptxgenjs" = "latest"

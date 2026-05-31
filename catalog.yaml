@@ -145,14 +145,6 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "mise/npm:vercel":
-    kind: global_cli
-    manager: mise
-    package: npm:vercel
-    install: mise use -g npm:vercel@latest
-    shared: true
-    managed_by_repo: true
-    removable_when_unreferenced: true
   "mise/npm:pnpm":
     kind: global_cli
     manager: mise
@@ -453,16 +445,6 @@ skills:
     notes:
       - treat as a maintained wrapper around the CLI rather than a perfect mirror guarantee
 
-  - name: deploy-to-vercel
-    source: vercel-agent-skills
-    local_path: skills/deploy-to-vercel
-    upstream_path: skills/deploy-to-vercel
-    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/deploy-to-vercel
-    purpose: Deploy applications or websites to Vercel.
-    depends_on:
-      - runtime/node
-      - mise/npm:vercel
-
   - name: doc-coauthoring
     source: anthropics-skills
     local_path: skills/doc-coauthoring
@@ -651,16 +633,6 @@ skills:
     depends_on: []
     notes:
       - this local file matches the public agent-stuff copy exactly
-
-  - name: vercel-cli-with-tokens
-    source: vercel-agent-skills
-    local_path: skills/vercel-cli-with-tokens
-    upstream_path: skills/vercel-cli-with-tokens
-    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/vercel-cli-with-tokens
-    purpose: Use the Vercel CLI with access tokens.
-    depends_on:
-      - runtime/node
-      - mise/npm:vercel
 
   - name: vercel-composition-patterns
     source: vercel-agent-skills
