@@ -187,24 +187,6 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/anthropic":
-    kind: python_package
-    manager: uv
-    package: anthropic
-    install: uv pip install --system anthropic
-    fallback_install: uv pip install --python 3.12 anthropic
-    shared: true
-    managed_by_repo: true
-    removable_when_unreferenced: true
-  "uv-pkg/mcp":
-    kind: python_package
-    manager: uv
-    package: mcp
-    install: uv pip install --system mcp
-    fallback_install: uv pip install --python 3.12 mcp
-    shared: true
-    managed_by_repo: true
-    removable_when_unreferenced: true
   "uv-pkg/openpyxl":
     kind: python_package
     manager: uv
@@ -274,33 +256,6 @@ environments:
     package: pillow
     install: uv pip install --system pillow
     fallback_install: uv pip install --python 3.12 pillow
-    shared: true
-    managed_by_repo: true
-    removable_when_unreferenced: true
-  "uv-pkg/numpy":
-    kind: python_package
-    manager: uv
-    package: numpy
-    install: uv pip install --system numpy
-    fallback_install: uv pip install --python 3.12 numpy
-    shared: true
-    managed_by_repo: true
-    removable_when_unreferenced: true
-  "uv-pkg/imageio":
-    kind: python_package
-    manager: uv
-    package: imageio
-    install: uv pip install --system imageio
-    fallback_install: uv pip install --python 3.12 imageio
-    shared: true
-    managed_by_repo: true
-    removable_when_unreferenced: true
-  "uv-pkg/imageio-ffmpeg":
-    kind: python_package
-    manager: uv
-    package: imageio-ffmpeg
-    install: uv pip install --system imageio-ffmpeg
-    fallback_install: uv pip install --python 3.12 imageio-ffmpeg
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
@@ -395,14 +350,6 @@ sources:
     notes:
       - local copy intentionally keeps Codex-specific wording adjustments
 skills:
-  - name: brand-guidelines
-    source: anthropics-skills
-    local_path: skills/brand-guidelines
-    upstream_path: skills/brand-guidelines
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/brand-guidelines
-    purpose: Apply Anthropic brand colors and typography.
-    depends_on: []
-
   - name: browser-use
     source: browser-use
     local_path: skills/browser-use
@@ -444,14 +391,6 @@ skills:
       - mise/npm:defuddle
     notes:
       - treat as a maintained wrapper around the CLI rather than a perfect mirror guarantee
-
-  - name: doc-coauthoring
-    source: anthropics-skills
-    local_path: skills/doc-coauthoring
-    upstream_path: skills/doc-coauthoring
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring
-    purpose: Guide structured collaborative documentation writing.
-    depends_on: []
 
   - name: docx
     source: anthropics-skills
@@ -497,14 +436,6 @@ skills:
     purpose: Create high-quality frontend interfaces and layouts.
     depends_on: []
 
-  - name: internal-comms
-    source: anthropics-skills
-    local_path: skills/internal-comms
-    upstream_path: skills/internal-comms
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/internal-comms
-    purpose: Draft internal communication artifacts.
-    depends_on: []
-
   - name: json-canvas
     source: obsidian-skills
     local_path: skills/json-canvas
@@ -512,17 +443,6 @@ skills:
     upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas
     purpose: Create and edit JSON Canvas files.
     depends_on: []
-
-  - name: mcp-builder
-    source: anthropics-skills
-    local_path: skills/mcp-builder
-    upstream_path: skills/mcp-builder
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/mcp-builder
-    purpose: Build MCP servers and related integrations.
-    depends_on:
-      - host/system-python
-      - uv-pkg/anthropic
-      - uv-pkg/mcp
 
   - name: mermaid
     source: agent-stuff
@@ -592,27 +512,6 @@ skills:
       - uv-pkg/markitdown[pptx]
       - uv-pkg/pillow
       - uv-pkg/lxml
-
-  - name: slack-gif-creator
-    source: anthropics-skills
-    local_path: skills/slack-gif-creator
-    upstream_path: skills/slack-gif-creator
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/slack-gif-creator
-    purpose: Create animated GIFs optimized for Slack.
-    depends_on:
-      - host/system-python
-      - uv-pkg/imageio
-      - uv-pkg/imageio-ffmpeg
-      - uv-pkg/numpy
-      - uv-pkg/pillow
-
-  - name: theme-factory
-    source: anthropics-skills
-    local_path: skills/theme-factory
-    upstream_path: skills/theme-factory
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/theme-factory
-    purpose: Apply reusable visual themes to artifacts.
-    depends_on: []
 
   - name: update-changelog
     source: agent-stuff

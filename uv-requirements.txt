@@ -1,6 +1,4 @@
 lxml
-anthropic
-mcp
 openpyxl
 pandas
 pypdf
@@ -9,8 +7,5 @@ pdf2image
 reportlab
 pytesseract
 pillow
-numpy
-imageio
-imageio-ffmpeg
 playwright
 markitdown[pptx]
