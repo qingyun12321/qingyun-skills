@@ -170,14 +170,6 @@ environments:
     managed_by_repo: true
     removable_when_unreferenced: true
 
-  "uv-tool/browser-use":
-    kind: python_tool
-    manager: uv
-    package: browser-use
-    install: uv tool install browser-use
-    shared: true
-    managed_by_repo: true
-    removable_when_unreferenced: true
   "uv-pkg/lxml":
     kind: python_package
     manager: uv
@@ -287,14 +279,6 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "host/chrome-or-chromium":
-    kind: host_application
-    manager: manual
-    package: chrome-or-chromium
-    install: install a compatible Chrome or Chromium browser on the host
-    shared: true
-    managed_by_repo: false
-    removable_when_unreferenced: manual
   "host/drawio-desktop":
     kind: host_application
     manager: manual
@@ -335,14 +319,6 @@ sources:
     repo_url: https://github.com/vercel-labs/agent-skills
     synced_commit: ce3e64e
     upstream_skill_root: skills
-  vercel-skills:
-    repo_url: https://github.com/vercel-labs/skills
-    synced_commit: 5516b8a
-    upstream_skill_root: skills
-  browser-use:
-    repo_url: https://github.com/browser-use/browser-use
-    synced_commit: f3878b0
-    upstream_skill_root: skills
   drawio-mcp:
     repo_url: https://github.com/jgraph/drawio-mcp
     synced_commit: b3bcf98
@@ -350,18 +326,6 @@ sources:
     notes:
       - local copy intentionally keeps Codex-specific wording adjustments
 skills:
-  - name: browser-use
-    source: browser-use
-    local_path: skills/browser-use
-    upstream_path: skills/browser-use
-    upstream_url: https://github.com/browser-use/browser-use/tree/main/skills/browser-use
-    purpose: Automate websites through the browser-use CLI.
-    depends_on:
-      - host/system-python
-      - uv-tool/browser-use
-    optional_depends_on:
-      - host/chrome-or-chromium
-
   - name: canvas-design
     source: anthropics-skills
     local_path: skills/canvas-design
@@ -418,15 +382,6 @@ skills:
       - host/drawio-desktop
     notes:
       - local copy keeps Codex-specific wording for file editing and open commands
-
-  - name: find-skills
-    source: vercel-skills
-    local_path: skills/find-skills
-    upstream_path: skills/find-skills
-    upstream_url: https://github.com/vercel-labs/skills/tree/main/skills/find-skills
-    purpose: Discover and install additional public skills.
-    depends_on:
-      - runtime/node
 
   - name: frontend-design
     source: anthropics-skills

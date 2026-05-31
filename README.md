@@ -57,7 +57,6 @@ This is for expanded workflows, host integrations, or optional capabilities.
 Examples:
 
 - `drawio` can still produce `.drawio` files without the desktop app, but export workflows benefit from it.
-- `browser-use` can run in different browser modes; some host browser setups are optional, not mandatory.
 
 ### `sync_policy`
 
@@ -119,7 +118,6 @@ sudo apt install -y \
 
 Host applications that are useful but not managed by this repo:
 
-- Chrome or Chromium for browser-backed skills
 - draw.io Desktop for drawio export workflows
 - an `obsidian` command or launcher for `obsidian-cli`
 
@@ -139,11 +137,10 @@ mise install
 
 This installs the curated Node runtime layer and the global npm-backed CLI layer defined in `mise.toml`.
 
-### 4. Install Python packages and tools with `uv`
+### 4. Install Python packages with `uv`
 
 ```bash
 cd "$REPO_ROOT"
-uv tool install browser-use
 uv pip install --system -r uv-requirements.txt
 python -m playwright install chromium
 ```
@@ -152,15 +149,8 @@ If the machine does not already have a usable system Python, use a fallback inte
 
 ```bash
 uv python install 3.12
-uv tool install --python 3.12 browser-use
 uv pip install --python 3.12 -r uv-requirements.txt
 uv run --python 3.12 python -m playwright install chromium
-```
-
-Optional if you want `browser-use` to launch its own managed Chromium instead of attaching to an existing browser:
-
-```bash
-browser-use install
 ```
 
 ### 5. Create the `.agents` symlink
@@ -237,12 +227,6 @@ Examples:
 
 - `mise uninstall node`
 - `mise uninstall npm:defuddle`
-
-### Remove a `uv` tool
-
-```bash
-uv tool uninstall browser-use
-```
 
 ### Remove shared `uv` Python packages from the system Python
 
