@@ -1,4 +1,4 @@
-updated_at: 2026-04-25
+updated_at: 2026-05-31
 
 layout:
   repo_root_marker_files:
@@ -44,7 +44,7 @@ maintenance:
     delete_local_extras_by_default: false
     preserve_local_artifacts:
       - node_modules committed or bootstrapped inside a skill directory
-      - local package.json or bun.lock files added for one-off helper scripts
+      - local package.json or package-manager lockfiles added for one-off helper scripts
       - Codex-specific wording changes kept intentionally in local skill copies
     explanation: >-
       This defines how upstream skill folders are copied into the local mirror. The
@@ -61,12 +61,6 @@ maintenance:
 cleanup_profiles:
   none:
     summary: no known extra cleanup outside the skill directory
-  baoyu-user-config:
-    summary: per-skill baoyu preferences and prompts
-    candidate_paths:
-      - ~/.baoyu-skills/<skill-name>
-      - $XDG_CONFIG_HOME/baoyu-skills/<skill-name>
-    removal_rule: remove by default when uninstalling that specific skill
 
 environments:
   "runtime/node":
@@ -74,14 +68,6 @@ environments:
     manager: mise
     package: node
     install: mise use -g node@lts
-    shared: true
-    managed_by_repo: true
-    removable_when_unreferenced: true
-  "runtime/bun":
-    kind: runtime
-    manager: mise
-    package: bun
-    install: mise use -g bun@latest
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
@@ -416,210 +402,7 @@ sources:
     upstream_skill_root: skill-cli
     notes:
       - local copy intentionally keeps Codex-specific wording adjustments
-  baoyu-skills:
-    repo_url: https://github.com/JimLiu/baoyu-skills
-    synced_commit: 31d728b
-    upstream_skill_root: skills
-    notes:
-      - several skills need one-time local Bun bootstrap after sync
 skills:
-  - name: baoyu-article-illustrator
-    source: baoyu-skills
-    local_path: skills/baoyu-article-illustrator
-    upstream_path: skills/baoyu-article-illustrator
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-article-illustrator
-    purpose: Build structured illustration plans for articles.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-    cleanup_profile: baoyu-user-config
-
-  - name: baoyu-comic
-    source: baoyu-skills
-    local_path: skills/baoyu-comic
-    upstream_path: skills/baoyu-comic
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-comic
-    purpose: Create educational comics and merge generated pages.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-    cleanup_profile: baoyu-user-config
-
-  - name: baoyu-compress-image
-    source: baoyu-skills
-    local_path: skills/baoyu-compress-image
-    upstream_path: skills/baoyu-compress-image
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-compress-image
-    purpose: Compress images to WebP or PNG.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-
-  - name: baoyu-cover-image
-    source: baoyu-skills
-    local_path: skills/baoyu-cover-image
-    upstream_path: skills/baoyu-cover-image
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-cover-image
-    purpose: Generate article cover images with style controls.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-    cleanup_profile: baoyu-user-config
-
-  - name: baoyu-danger-gemini-web
-    source: baoyu-skills
-    local_path: skills/baoyu-danger-gemini-web
-    upstream_path: skills/baoyu-danger-gemini-web
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-danger-gemini-web
-    purpose: Use the reverse-engineered Gemini Web flow for text or image generation.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-      - host/chrome-or-chromium
-
-  - name: baoyu-danger-x-to-markdown
-    source: baoyu-skills
-    local_path: skills/baoyu-danger-x-to-markdown
-    upstream_path: skills/baoyu-danger-x-to-markdown
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-danger-x-to-markdown
-    purpose: Convert X posts or articles into markdown.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-      - host/chrome-or-chromium
-
-  - name: baoyu-format-markdown
-    source: baoyu-skills
-    local_path: skills/baoyu-format-markdown
-    upstream_path: skills/baoyu-format-markdown
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-format-markdown
-    purpose: Reformat plain text or markdown into a polished markdown document.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-
-  - name: baoyu-imagine
-    source: baoyu-skills
-    local_path: skills/baoyu-imagine
-    upstream_path: skills/baoyu-imagine
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-imagine
-    purpose: Generate images through official provider APIs with prompts, references, and batch jobs.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-    cleanup_profile: baoyu-user-config
-
-  - name: baoyu-infographic
-    source: baoyu-skills
-    local_path: skills/baoyu-infographic
-    upstream_path: skills/baoyu-infographic
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-infographic
-    purpose: Build high-density infographics from structured content.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-    cleanup_profile: baoyu-user-config
-
-  - name: baoyu-markdown-to-html
-    source: baoyu-skills
-    local_path: skills/baoyu-markdown-to-html
-    upstream_path: skills/baoyu-markdown-to-html
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-markdown-to-html
-    purpose: Convert markdown into styled HTML, especially for WeChat workflows.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-
-  - name: baoyu-post-to-wechat
-    source: baoyu-skills
-    local_path: skills/baoyu-post-to-wechat
-    upstream_path: skills/baoyu-post-to-wechat
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-post-to-wechat
-    purpose: Publish posts to WeChat Official Account.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-      - host/chrome-or-chromium
-    cleanup_profile: baoyu-user-config
-
-  - name: baoyu-post-to-weibo
-    source: baoyu-skills
-    local_path: skills/baoyu-post-to-weibo
-    upstream_path: skills/baoyu-post-to-weibo
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-post-to-weibo
-    purpose: Publish content and articles to Weibo.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-      - host/chrome-or-chromium
-
-  - name: baoyu-post-to-x
-    source: baoyu-skills
-    local_path: skills/baoyu-post-to-x
-    upstream_path: skills/baoyu-post-to-x
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-post-to-x
-    purpose: Publish posts and long-form content to X.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-      - host/chrome-or-chromium
-
-  - name: baoyu-slide-deck
-    source: baoyu-skills
-    local_path: skills/baoyu-slide-deck
-    upstream_path: skills/baoyu-slide-deck
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-slide-deck
-    purpose: Generate slide deck images from structured content.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-
-  - name: baoyu-translate
-    source: baoyu-skills
-    local_path: skills/baoyu-translate
-    upstream_path: skills/baoyu-translate
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-translate
-    purpose: Translate articles and documents between languages.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-    cleanup_profile: baoyu-user-config
-
-  - name: baoyu-url-to-markdown
-    source: baoyu-skills
-    local_path: skills/baoyu-url-to-markdown
-    upstream_path: skills/baoyu-url-to-markdown
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-url-to-markdown
-    purpose: Fetch web pages with baoyu-fetch and convert them to markdown.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-      - host/chrome-or-chromium
-    cleanup_profile: baoyu-user-config
-    notes:
-      - keep an extra eye on this skill during upgrades because its internal pipeline changed significantly upstream
-
-  - name: baoyu-xhs-images
-    source: baoyu-skills
-    local_path: skills/baoyu-xhs-images
-    upstream_path: skills/baoyu-xhs-images
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-xhs-images
-    purpose: Generate Xiaohongshu-style infographic image series.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-    cleanup_profile: baoyu-user-config
-
-  - name: baoyu-youtube-transcript
-    source: baoyu-skills
-    local_path: skills/baoyu-youtube-transcript
-    upstream_path: skills/baoyu-youtube-transcript
-    upstream_url: https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-youtube-transcript
-    purpose: Download YouTube transcripts, subtitles, and cover images.
-    depends_on:
-      - runtime/node
-      - runtime/bun
-
   - name: brand-guidelines
     source: anthropics-skills
     local_path: skills/brand-guidelines

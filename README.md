@@ -31,7 +31,7 @@ Python policy in this repo:
 
 ## Hard Rules
 
-1. Resolve `REPO_ROOT` first. Do not assume this repository lives in `~/projects`.
+1. Resolve `REPO_ROOT` first. The canonical local checkout is `~/qingyun-skills`, but verify the actual path before running commands.
 2. Do not persist absolute repository paths in tracked files when a repo-relative form is possible.
 3. Do not guess a skill's upstream. Use `catalog.yaml`.
 4. Do not remove a shared environment until no skill references it.
@@ -88,10 +88,10 @@ For host applications marked `managed_by_repo: false`, this repo tracks the rela
 
 ## Resolve `REPO_ROOT`
 
-Before running any install or symlink commands:
+Before running any install or symlink commands, use the actual checkout path. On this machine the canonical local checkout is `~/qingyun-skills`:
 
 ```bash
-cd /path/to/qingyun-skills
+cd "$HOME/qingyun-skills"
 export REPO_ROOT="$PWD"
 ```
 
@@ -137,7 +137,7 @@ cd "$REPO_ROOT"
 mise install
 ```
 
-This installs the curated Node/Bun runtime layer and the global npm-backed CLI layer defined in `mise.toml`.
+This installs the curated Node runtime layer and the global npm-backed CLI layer defined in `mise.toml`.
 
 ### 4. Install Python packages and tools with `uv`
 
@@ -168,19 +168,6 @@ browser-use install
 ```bash
 mkdir -p "$HOME/.agents"
 ln -sfn "$REPO_ROOT/skills" "$HOME/.agents/skills"
-```
-
-### 6. Bootstrap local helper dependencies for selected `baoyu-*` skills
-
-Some `baoyu-*` skills keep local helper dependencies inside the skill directory.
-
-```bash
-for d in "$REPO_ROOT"/skills/baoyu-{danger-gemini-web,danger-x-to-markdown,format-markdown,markdown-to-html,post-to-wechat,post-to-weibo,post-to-x,translate,url-to-markdown}/scripts; do
-  (cd "$d" && npx -y bun install)
-done
-
-(cd "$REPO_ROOT"/skills/baoyu-slide-deck/scripts && npx -y bun add pptxgenjs pdf-lib)
-(cd "$REPO_ROOT"/skills/baoyu-comic/scripts && npx -y bun add pdf-lib)
 ```
 
 ## Upgrade Workflow
@@ -249,7 +236,6 @@ mise uninstall <tool-spec>
 Examples:
 
 - `mise uninstall node`
-- `mise uninstall bun`
 - `mise uninstall npm:defuddle`
 - `mise uninstall npm:vercel`
 
@@ -291,15 +277,6 @@ Use this only when the environment is truly unreferenced and nothing else on the
 ### `none`
 
 No known extra cleanup outside the skill directory.
-
-### `baoyu-user-config`
-
-These skills may store preferences or prompts outside the repo:
-
-- `~/.baoyu-skills/<skill-name>`
-- `$XDG_CONFIG_HOME/baoyu-skills/<skill-name>`
-
-Delete these by default when uninstalling that skill.
 
 ## Verification
 
