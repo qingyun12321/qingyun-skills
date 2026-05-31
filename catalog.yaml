@@ -299,29 +299,29 @@ environments:
 sources:
   anthropics-skills:
     repo_url: https://github.com/anthropics/skills
-    synced_commit: 5128e18
+    synced_commit: da20c92
     upstream_skill_root: skills
   agent-stuff:
     repo_url: https://github.com/mitsuhiko/agent-stuff
-    synced_commit: 521cafd
+    synced_commit: 39e6911
     upstream_skill_root: skills
     notes:
       - primary public upstream for commit, mermaid, update-changelog, and uv
       - dot-agent republishes at least some of these skills, but the local copies match agent-stuff exactly
   obsidian-skills:
     repo_url: https://github.com/kepano/obsidian-skills
-    synced_commit: fa1e131
+    synced_commit: 553ef99
     upstream_skill_root: skills
     notes:
       - authoritative public upstream for defuddle, json-canvas, obsidian-bases, obsidian-cli, and obsidian-markdown
       - the local copies of those five skills currently match this upstream exactly
   vercel-agent-skills:
     repo_url: https://github.com/vercel-labs/agent-skills
-    synced_commit: ce3e64e
+    synced_commit: 1801156
     upstream_skill_root: skills
   drawio-mcp:
     repo_url: https://github.com/jgraph/drawio-mcp
-    synced_commit: b3bcf98
+    synced_commit: 3f8e810
     upstream_skill_root: skill-cli
     notes:
       - local copy intentionally keeps Codex-specific wording adjustments
