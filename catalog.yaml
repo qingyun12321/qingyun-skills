@@ -1,4 +1,4 @@
-updated_at: 2026-05-31
+updated_at: 2026-06-09
 
 layout:
   repo_root_marker_files:
@@ -299,32 +299,36 @@ environments:
 sources:
   anthropics-skills:
     repo_url: https://github.com/anthropics/skills
-    synced_commit: da20c92
+    synced_commit: c30d329
     upstream_skill_root: skills
   agent-stuff:
     repo_url: https://github.com/mitsuhiko/agent-stuff
-    synced_commit: 39e6911
+    synced_commit: c68c84c
     upstream_skill_root: skills
     notes:
       - primary public upstream for commit, mermaid, update-changelog, and uv
       - dot-agent republishes at least some of these skills, but the local copies match agent-stuff exactly
   obsidian-skills:
     repo_url: https://github.com/kepano/obsidian-skills
-    synced_commit: 553ef99
+    synced_commit: a1dc48e
     upstream_skill_root: skills
     notes:
       - authoritative public upstream for defuddle, json-canvas, obsidian-bases, obsidian-cli, and obsidian-markdown
       - the local copies of those five skills currently match this upstream exactly
   vercel-agent-skills:
     repo_url: https://github.com/vercel-labs/agent-skills
-    synced_commit: 1801156
+    synced_commit: 4ec6f84
     upstream_skill_root: skills
   drawio-mcp:
     repo_url: https://github.com/jgraph/drawio-mcp
-    synced_commit: 3f8e810
+    synced_commit: 99235d5
     upstream_skill_root: skill-cli
     notes:
       - local copy intentionally keeps Codex-specific wording adjustments
+  spellbook:
+    repo_url: https://github.com/majiayu000/spellbook
+    synced_commit: 60091e1
+    upstream_skill_root: skills
 skills:
   - name: canvas-design
     source: anthropics-skills
@@ -467,6 +471,14 @@ skills:
       - uv-pkg/markitdown[pptx]
       - uv-pkg/pillow
       - uv-pkg/lxml
+
+  - name: threads
+    source: spellbook
+    local_path: skills/threads
+    upstream_path: skills/threads
+    upstream_url: https://github.com/majiayu000/spellbook/tree/main/skills/threads
+    purpose: Coordinate Codex-native parallel thread workflows.
+    depends_on: []
 
   - name: update-changelog
     source: agent-stuff
