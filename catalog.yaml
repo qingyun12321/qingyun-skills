@@ -1,4 +1,4 @@
-updated_at: 2026-06-09
+updated_at: 2026-06-10
 
 layout:
   repo_root_marker_files:
@@ -325,11 +325,30 @@ sources:
     upstream_skill_root: skill-cli
     notes:
       - local copy intentionally keeps Codex-specific wording adjustments
+  local-wrappers:
+    repo_url: local
+    synced_commit: local
+    upstream_skill_root: skills
+    notes:
+      - locally authored wrappers maintained in this repository
   spellbook:
     repo_url: https://github.com/majiayu000/spellbook
     synced_commit: 60091e1
     upstream_skill_root: skills
 skills:
+  - name: beautiful-mermaid
+    source: local-wrappers
+    local_path: skills/beautiful-mermaid
+    upstream_path: skills/beautiful-mermaid
+    upstream_url: https://github.com/lukilabs/beautiful-mermaid
+    purpose: Render Mermaid diagrams to SVG or ASCII/Unicode terminal art.
+    depends_on:
+      - runtime/node
+    notes:
+      - local wrapper around npm package beautiful-mermaid@1.1.3
+      - upstream .agents/skills/editor.md is for maintaining the upstream live editor and is not mirrored here
+      - package has no npm bin, so use scripts/render.mjs instead of mise/npm:beautiful-mermaid
+
   - name: canvas-design
     source: anthropics-skills
     local_path: skills/canvas-design

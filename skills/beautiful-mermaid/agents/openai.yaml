@@ -1,0 +1,4 @@
+interface:
+  display_name: "Beautiful Mermaid"
+  short_description: "Render Mermaid to SVG or terminal art"
+  default_prompt: "Use $beautiful-mermaid to render this Mermaid diagram as SVG."
