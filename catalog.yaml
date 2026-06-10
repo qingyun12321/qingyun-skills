@@ -306,7 +306,7 @@ sources:
     synced_commit: c68c84c
     upstream_skill_root: skills
     notes:
-      - primary public upstream for commit, mermaid, update-changelog, and uv
+      - primary public upstream for commit, update-changelog, and uv
       - dot-agent republishes at least some of these skills, but the local copies match agent-stuff exactly
   obsidian-skills:
     repo_url: https://github.com/kepano/obsidian-skills
@@ -402,15 +402,6 @@ skills:
     upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas
     purpose: Create and edit JSON Canvas files.
     depends_on: []
-
-  - name: mermaid
-    source: agent-stuff
-    local_path: skills/mermaid
-    upstream_path: skills/mermaid
-    upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/mermaid
-    purpose: Create or validate Mermaid diagrams.
-    depends_on:
-      - runtime/node
 
   - name: obsidian-bases
     source: obsidian-skills
