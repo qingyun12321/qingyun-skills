@@ -2,10 +2,15 @@ lxml
 openpyxl
 pandas
 pypdf
+weasyprint
 pdfplumber
 pdf2image
 reportlab
 pytesseract
 pillow
 playwright
+Pygments
+pymupdf
+numpy
+python-pptx
 markitdown[pptx]

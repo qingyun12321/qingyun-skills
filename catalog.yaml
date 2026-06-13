@@ -1,4 +1,4 @@
-updated_at: 2026-06-10
+updated_at: 2026-06-13
 
 layout:
   repo_root_marker_files:
@@ -137,6 +137,51 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
+  "apt/libcairo2":
+    kind: system_package
+    manager: apt
+    package: libcairo2
+    install: sudo apt install -y libcairo2
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/libpango-1.0-0":
+    kind: system_package
+    manager: apt
+    package: libpango-1.0-0
+    install: sudo apt install -y libpango-1.0-0
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/libpangoft2-1.0-0":
+    kind: system_package
+    manager: apt
+    package: libpangoft2-1.0-0
+    install: sudo apt install -y libpangoft2-1.0-0
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/libharfbuzz0b":
+    kind: system_package
+    manager: apt
+    package: libharfbuzz0b
+    install: sudo apt install -y libharfbuzz0b
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "apt/fonts-noto-cjk":
+    kind: system_package
+    manager: apt
+    package: fonts-noto-cjk
+    install: sudo apt install -y fonts-noto-cjk
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
   "mise/npm:defuddle":
     kind: global_cli
     manager: mise
@@ -206,6 +251,15 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
+  "uv-pkg/weasyprint":
+    kind: python_package
+    manager: uv
+    package: weasyprint
+    install: uv pip install --system weasyprint
+    fallback_install: uv pip install --python 3.12 weasyprint
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
   "uv-pkg/pdfplumber":
     kind: python_package
     manager: uv
@@ -257,6 +311,42 @@ environments:
     package: playwright
     install: uv pip install --system playwright
     fallback_install: uv pip install --python 3.12 playwright
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/pygments":
+    kind: python_package
+    manager: uv
+    package: Pygments
+    install: uv pip install --system Pygments
+    fallback_install: uv pip install --python 3.12 Pygments
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/pymupdf":
+    kind: python_package
+    manager: uv
+    package: pymupdf
+    install: uv pip install --system pymupdf
+    fallback_install: uv pip install --python 3.12 pymupdf
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/numpy":
+    kind: python_package
+    manager: uv
+    package: numpy
+    install: uv pip install --system numpy
+    fallback_install: uv pip install --python 3.12 numpy
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+  "uv-pkg/python-pptx":
+    kind: python_package
+    manager: uv
+    package: python-pptx
+    install: uv pip install --system python-pptx
+    fallback_install: uv pip install --python 3.12 python-pptx
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
@@ -331,6 +421,18 @@ sources:
     upstream_skill_root: skills
     notes:
       - locally authored wrappers maintained in this repository
+  keep-codex-fast:
+    repo_url: https://github.com/vibeforge1111/keep-codex-fast
+    synced_commit: e74c449
+    upstream_skill_root: .
+  kami:
+    repo_url: https://github.com/tw93/Kami
+    synced_commit: ba61bbf
+    upstream_skill_root: .
+  waza:
+    repo_url: https://github.com/tw93/Waza
+    synced_commit: d41e8ee
+    upstream_skill_root: skills
   spellbook:
     repo_url: https://github.com/majiayu000/spellbook
     synced_commit: 60091e1
@@ -420,6 +522,106 @@ skills:
     upstream_path: skills/json-canvas
     upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas
     purpose: Create and edit JSON Canvas files.
+    depends_on: []
+
+  - name: kami
+    source: kami
+    local_path: skills/kami
+    upstream_path: .
+    upstream_url: https://github.com/tw93/Kami
+    purpose: Typeset professional documents, slide decks, and product landing pages.
+    depends_on:
+      - host/system-python
+      - apt/libcairo2
+      - apt/libpango-1.0-0
+      - apt/libpangoft2-1.0-0
+      - apt/libharfbuzz0b
+      - apt/poppler-utils
+      - uv-pkg/weasyprint
+      - uv-pkg/pypdf
+    optional_depends_on:
+      - apt/fonts-noto-cjk
+      - uv-pkg/pygments
+      - uv-pkg/pymupdf
+      - uv-pkg/numpy
+      - uv-pkg/python-pptx
+    notes:
+      - Marp rendering is documented upstream as a user-provided local install and is not managed by this mirror.
+
+  - name: keep-codex-fast
+    source: keep-codex-fast
+    local_path: skills/keep-codex-fast
+    upstream_path: .
+    upstream_url: https://github.com/vibeforge1111/keep-codex-fast
+    purpose: Inspect and safely maintain local Codex state with backups and archives.
+    depends_on:
+      - host/system-python
+
+  - name: check
+    source: waza
+    local_path: skills/check
+    upstream_path: skills/check
+    upstream_url: https://github.com/tw93/Waza/tree/main/skills/check
+    purpose: Review diffs, PRs, release readiness, commits, pushes, publishing, and project audits.
+    depends_on:
+      - host/system-python
+
+  - name: design
+    source: waza
+    local_path: skills/design
+    upstream_path: skills/design
+    upstream_url: https://github.com/tw93/Waza/tree/main/skills/design
+    purpose: Produce distinctive frontend UI direction and screenshot-driven polish.
+    depends_on: []
+
+  - name: health
+    source: waza
+    local_path: skills/health
+    upstream_path: skills/health
+    upstream_url: https://github.com/tw93/Waza/tree/main/skills/health
+    purpose: Audit agent instruction/config drift, hooks, MCP, verifier surfaces, and maintainability.
+    depends_on:
+      - host/system-python
+
+  - name: hunt
+    source: waza
+    local_path: skills/hunt
+    upstream_path: skills/hunt
+    upstream_url: https://github.com/tw93/Waza/tree/main/skills/hunt
+    purpose: Debug errors, regressions, and broken behavior by confirming root cause before fixing.
+    depends_on: []
+
+  - name: learn
+    source: waza
+    local_path: skills/learn
+    upstream_path: skills/learn
+    upstream_url: https://github.com/tw93/Waza/tree/main/skills/learn
+    purpose: Turn unfamiliar domains or source bundles into coherent publish-ready output.
+    depends_on: []
+
+  - name: read
+    source: waza
+    local_path: skills/read
+    upstream_path: skills/read
+    upstream_url: https://github.com/tw93/Waza/tree/main/skills/read
+    purpose: Read URLs and PDFs, returning concise summaries or clean Markdown for downstream use.
+    depends_on:
+      - host/system-python
+
+  - name: think
+    source: waza
+    local_path: skills/think
+    upstream_path: skills/think
+    upstream_url: https://github.com/tw93/Waza/tree/main/skills/think
+    purpose: Turn rough ideas into approved, decision-complete plans before implementation.
+    depends_on: []
+
+  - name: write
+    source: waza
+    local_path: skills/write
+    upstream_path: skills/write
+    upstream_url: https://github.com/tw93/Waza/tree/main/skills/write
+    purpose: Rewrite and polish Chinese or English prose while preserving intent.
     depends_on: []
 
   - name: obsidian-bases
