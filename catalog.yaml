@@ -1,4 +1,4 @@
-updated_at: 2026-06-13
+updated_at: 2026-06-19
 
 layout:
   repo_root_marker_files:
@@ -450,6 +450,17 @@ skills:
       - local wrapper around npm package beautiful-mermaid@1.1.3
       - upstream .agents/skills/editor.md is for maintaining the upstream live editor and is not mirrored here
       - package has no npm bin, so use scripts/render.mjs instead of mise/npm:beautiful-mermaid
+
+  - name: restoration
+    source: local-wrappers
+    local_path: skills/restoration
+    upstream_path: skills/restoration
+    upstream_url: local
+    purpose: Enhance raster images with forced $imagegen usage, best-effort watermark removal, source-directory output for local files, and Windows Pictures output for pasted images.
+    depends_on:
+      - host/system-python
+    notes:
+      - locally authored skill that delegates image restoration and watermark removal to $imagegen
 
   - name: canvas-design
     source: anthropics-skills
