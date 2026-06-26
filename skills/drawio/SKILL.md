@@ -13,7 +13,9 @@ This upstream skill was written for Claude Code. In Codex, interpret the tool re
 
 - "Write tool" means creating or editing the `.drawio` file with Codex file-editing tools such as `apply_patch`
 - "Open the result" means using a platform-appropriate shell open command like `open`, `xdg-open`, or `cmd.exe /c start` on WSL2/Windows
-- If opening fails, print the absolute file path so the user can open it manually
+
+When you export on WSL2, quote the Windows executable path with normal shell quotes; do not use backticks.
+
 
 ## How to create a diagram
 
@@ -23,7 +25,7 @@ This upstream skill was written for Claude Code. In Codex, interpret the tool re
    - `png` / `svg` / `pdf` → locate the draw.io CLI (see [draw.io CLI](#drawio-cli)), export with `--embed-diagram`, then delete the source `.drawio` file. If the CLI is not found, keep the `.drawio` file and tell the user they can install the draw.io desktop app to enable export, or use `url` mode instead, or open the `.drawio` file directly
    - `url` → generate a browser URL from the XML and open it (see [Browser URL output](#browser-url-output)). Keep the `.drawio` file as a persistent local copy
    - *(no format)* → no extra step; the `.drawio` file is the output
-4. **Open the result** — the exported file if exported, the browser URL if `url`, or the `.drawio` file otherwise. In Codex, do this with a shell open command. If the open command fails, print the file path (or URL) so the user can open it manually
+4. **Open the result** — the exported file if exported, the browser URL if `url`, or the `.drawio` file otherwise. If the open command fails, print the file path (or URL) so the user can open it manually
 
 ## Choosing the output format
 

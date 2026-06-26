@@ -1,4 +1,4 @@
-updated_at: 2026-06-19
+updated_at: '2026-06-26'
 layout:
   repo_root_marker_files:
   - catalog.yaml
@@ -405,11 +405,11 @@ environments:
 sources:
   anthropics-skills:
     repo_url: https://github.com/anthropics/skills
-    synced_commit: c30d329
+    synced_commit: '5754626'
     upstream_skill_root: skills
   agent-stuff:
     repo_url: https://github.com/mitsuhiko/agent-stuff
-    synced_commit: c68c84c
+    synced_commit: f1c881d
     upstream_skill_root: skills
     notes:
     - primary public upstream for commit, update-changelog, and uv
@@ -423,11 +423,11 @@ sources:
     - the local copies of those five skills currently match this upstream exactly
   vercel-agent-skills:
     repo_url: https://github.com/vercel-labs/agent-skills
-    synced_commit: 4ec6f84
+    synced_commit: f8a72b9
     upstream_skill_root: skills
   drawio-mcp:
     repo_url: https://github.com/jgraph/drawio-mcp
-    synced_commit: 99235d5
+    synced_commit: 778b75e
     upstream_skill_root: skill-cli
     notes:
     - local copy intentionally keeps Codex-specific wording adjustments
@@ -443,15 +443,15 @@ sources:
     upstream_skill_root: .
   kami:
     repo_url: https://github.com/tw93/Kami
-    synced_commit: ba61bbf
+    synced_commit: 166e8f1
     upstream_skill_root: .
   waza:
     repo_url: https://github.com/tw93/Waza
-    synced_commit: d41e8ee
+    synced_commit: 01da748
     upstream_skill_root: skills
   spellbook:
     repo_url: https://github.com/majiayu000/spellbook
-    synced_commit: 60091e1
+    synced_commit: 97a677e
     upstream_skill_root: skills
 skills:
 - name: beautiful-mermaid

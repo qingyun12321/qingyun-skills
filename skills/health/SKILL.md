@@ -1,6 +1,6 @@
 ---
 name: health
-description: "Runs a budget-aware agent-assisted engineering health audit for instruction/config drift, hooks/MCP, verifier surfaces, and AI maintainability. Use when users ask 检查claude/检查codex/检查pi/配置检查/健康度 or report agents ignoring instructions, missing validation, or code becoming hard to maintain. Not for debugging code or reviewing PRs."
+description: "Runs a budget-aware agent-assisted engineering health audit for instruction/config drift, hooks/MCP, verifier surfaces, and AI maintainability. Use when users ask in any language to audit Claude, Codex, Pi, agent instructions, MCP or hooks, verifier coverage, or AI-maintainability drift. Not for debugging application code or reviewing PRs."
 when_to_use: "检查claude, 检查codex, 检查pi, Codex 配置, Pi 配置, AGENTS.md, config.toml, agent instructions, 健康度, 配置检查, 配置对不对, AI coding 腐化, 代码变烂, 维护性, 上下文混乱, 验证缺失, 验证命令失真, Claude ignoring instructions, Pi coding agent, check config, settings not working, audit config"
 dispatch_intent: "Codex/Claude/Pi ignoring instructions, agent config audit, hooks/MCP broken, health token usage, AI coding code rot, hotspot ownership, unclear context, missing verification, stale verifier output"
 ---
@@ -8,6 +8,8 @@ dispatch_intent: "Codex/Claude/Pi ignoring instructions, agent config audit, hoo
 # Health: Agent-Assisted Engineering Health
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
+
+**Update check (non-blocking).** Before starting, run `bash ../../scripts/check-update.sh` once; if it prints a line, relay it to the user, then continue. It runs at most once a day, only reads a public version file, sends no data, and fails silently.
 
 Audit the current project's agent setup and AI coding maintainability against this framework:
 `agent config → instruction surfaces → tools/runtime → verifiers → maintainability`
