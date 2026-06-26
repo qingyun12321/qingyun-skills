@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unlimited OCR"
+  short_description: "Run Baidu Unlimited-OCR locally"
+  default_prompt: "Use $unlimited-ocr to OCR this PDF or image with the local Unlimited-OCR setup."

@@ -1,4 +1,4 @@
-updated_at: '2026-06-26'
+updated_at: '2026-06-27'
 layout:
   repo_root_marker_files:
   - catalog.yaml
@@ -380,6 +380,14 @@ environments:
     shared: false
     managed_by_repo: false
     removable_when_unreferenced: manual
+  host/unlimited-ocr-local:
+    kind: local_model_runtime
+    manager: manual
+    package: Baidu Unlimited-OCR checkout and baidu/Unlimited-OCR model
+    install: keep ~/Unlimited-OCR provisioned with uv and keep the model under ~/models/baidu/Unlimited-OCR
+    shared: false
+    managed_by_repo: false
+    removable_when_unreferenced: manual
   uv-pkg/beautifulsoup4:
     kind: python_project_dependency
     manager: uv
@@ -477,6 +485,18 @@ skills:
   - runtime/python
   notes:
   - locally authored skill that delegates image restoration and watermark removal to $imagegen
+  type: local_created
+- name: unlimited-ocr
+  source: local-wrappers
+  local_path: skills/unlimited-ocr
+  upstream_path: skills/unlimited-ocr
+  upstream_url: local
+  purpose: Run local Baidu Unlimited-OCR on PDFs, images, and image directories with Markdown outputs and optional metrics.
+  depends_on:
+  - runtime/python
+  - host/unlimited-ocr-local
+  notes:
+  - locally authored wrapper around the existing ~/Unlimited-OCR uv checkout and ~/models/baidu/Unlimited-OCR model directory
   type: local_created
 - name: canvas-design
   source: anthropics-skills
