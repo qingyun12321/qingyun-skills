@@ -1,0 +1,28 @@
+[project]
+name = "qingyun-skills"
+version = "0.1.0"
+description = "Local agent skills mirror maintenance environment"
+requires-python = ">=3.12"
+dependencies = [
+    "lxml",
+    "beautifulsoup4",
+    "openpyxl",
+    "pandas",
+    "pypdf",
+    "weasyprint",
+    "pdfplumber",
+    "pdf2image",
+    "reportlab",
+    "pytesseract",
+    "pillow",
+    "playwright",
+    "Pygments",
+    "pymupdf",
+    "numpy",
+    "python-pptx",
+    "markitdown[pptx]",
+    "pyyaml",
+]
+
+[tool.uv]
+package = false

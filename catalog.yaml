@@ -1,69 +1,71 @@
 updated_at: 2026-06-19
-
 layout:
   repo_root_marker_files:
-    - catalog.yaml
-    - skills
+  - catalog.yaml
+  - skills
   active_symlink:
     path: ~/.agents/skills
     target_from_repo_root: skills
     command_template: ln -sfn "$REPO_ROOT/skills" "$HOME/.agents/skills"
-
 maintenance:
   environment_managers:
     runtime_and_global_cli: mise
-    python_packages_and_tools: uv
+    python_project_environment: uv
   source_inventory_policy:
     remove_unused_sources: true
     notes:
-      - every source entry must be referenced by at least one skill
-      - if the last skill moves away from a source, remove that source entry in the same maintenance change
+    - every source entry must be referenced by at least one skill
+    - if the last skill moves away from a source, remove that source entry in the same maintenance change
   sudo_policy:
     apt_commands_require_user_execution: true
     agent_responsibility:
-      - keep the apt package inventory accurate
-      - compute which apt packages are still referenced
-      - generate the exact sudo command for the user to run
+    - keep the apt package inventory accurate
+    - compute which apt packages are still referenced
+    - generate the exact sudo command for the user to run
     notes:
-      - agents should not assume they can execute privileged apt install or apt remove commands themselves
+    - agents should not assume they can execute privileged apt install or apt remove commands themselves
   python_strategy:
-    default: use the system default Python
-    package_install_mode: uv pip install --system
-    tool_install_mode: uv tool install
-    fallback_when_system_python_missing:
-      - uv python install 3.12
-      - use --python 3.12 only for the fallback case
+    default: repository-local uv project environment
+    preferred_python: '3.12'
+    project_file: pyproject.toml
+    lock_file: uv.lock
+    virtualenv: .venv
+    package_install_mode: uv add --raw <package>
+    package_remove_mode: uv remove <package>
+    sync_mode: uv sync --python 3.12
+    system_python_policy: do not install repo Python packages into the system Python
   environment_files:
     mise: mise.toml
-    uv: uv-requirements.txt
+    python_project: pyproject.toml
+    python_lock: uv.lock
   dependency_reference_rules:
     depends_on: required shared environment or host prerequisite
     optional_depends_on: helpful for expanded workflows but not required for the narrowest happy path
   sync_policy:
-    preferred_copy_command: rsync -a
-    delete_local_extras_by_default: false
+    preferred_copy_command: rsync -a --delete
+    delete_local_extras_by_default: true
+    local_created_skills_are_not_upstream_synced: true
     preserve_local_artifacts:
-      - node_modules committed or bootstrapped inside a skill directory
-      - local package.json or package-manager lockfiles added for one-off helper scripts
-      - Codex-specific wording changes kept intentionally in local skill copies
-    explanation: >-
-      This defines how upstream skill folders are copied into the local mirror. The
-      default policy is copy-forward without deleting local extras, because some
-      skills intentionally keep local bootstrap artifacts or tiny local adaptations.
+    - node_modules committed or bootstrapped inside a skill directory
+    - local package.json or package-manager lockfiles added for one-off helper scripts
+    - Codex-specific wording changes kept intentionally in local skill copies
+    explanation: This defines how upstream skill folders are copied into the local mirror. Upstream-backed skills are refreshed with rsync -a --delete after reviewing notes; local-created skills are edited in this repository and are not overwritten from upstream.
   uninstall_policy:
     remove_shared_environment_only_when_unreferenced: true
     remove_skill_specific_state_by_default: true
     notes:
-      - do not remove a shared environment until no skill references it
-      - when uninstalling a skill, remove its skill-specific user data and local state by default
-      - only keep skill-generated user data if the uninstall task explicitly asks to preserve it
-
+    - do not remove a shared environment until no skill references it
+    - when uninstalling a skill, remove its skill-specific user data and local state by default
+    - only keep skill-generated user data if the uninstall task explicitly asks to preserve it
+  skill_types:
+    upstream: copied from the recorded upstream source with rsync -a --delete
+    local_wrapper: repo-maintained wrapper around an external tool or rule source; update manually according to notes, not by wholesale upstream replacement
+    local_created: authored in this repository; no upstream sync command applies
 cleanup_profiles:
   none:
     summary: no known extra cleanup outside the skill directory
-
 environments:
-  "runtime/node":
+  runtime/node:
     kind: runtime
     manager: mise
     package: node
@@ -71,19 +73,15 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "host/system-python":
-    kind: host_runtime
-    manager: system
+  runtime/python:
+    kind: runtime
+    manager: uv
     package: python
-    install: use the system default Python if available
+    install: uv sync --python 3.12
     shared: true
-    managed_by_repo: false
-    removable_when_unreferenced: manual
-    fallback_install:
-      - uv python install 3.12
-      - use --python 3.12 only when the system has no usable Python
-
-  "apt/libreoffice":
+    managed_by_repo: true
+    removable_when_unreferenced: false
+  apt/libreoffice:
     kind: system_package
     manager: apt
     package: libreoffice
@@ -92,7 +90,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/qpdf":
+  apt/qpdf:
     kind: system_package
     manager: apt
     package: qpdf
@@ -101,7 +99,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/pdftk-java":
+  apt/pdftk-java:
     kind: system_package
     manager: apt
     package: pdftk-java
@@ -110,7 +108,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/tesseract-ocr":
+  apt/tesseract-ocr:
     kind: system_package
     manager: apt
     package: tesseract-ocr
@@ -119,7 +117,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/poppler-utils":
+  apt/poppler-utils:
     kind: system_package
     manager: apt
     package: poppler-utils
@@ -128,7 +126,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/pandoc":
+  apt/pandoc:
     kind: system_package
     manager: apt
     package: pandoc
@@ -137,7 +135,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/libcairo2":
+  apt/libcairo2:
     kind: system_package
     manager: apt
     package: libcairo2
@@ -146,7 +144,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/libpango-1.0-0":
+  apt/libpango-1.0-0:
     kind: system_package
     manager: apt
     package: libpango-1.0-0
@@ -155,7 +153,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/libpangoft2-1.0-0":
+  apt/libpangoft2-1.0-0:
     kind: system_package
     manager: apt
     package: libpangoft2-1.0-0
@@ -164,7 +162,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/libharfbuzz0b":
+  apt/libharfbuzz0b:
     kind: system_package
     manager: apt
     package: libharfbuzz0b
@@ -173,7 +171,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "apt/fonts-noto-cjk":
+  apt/fonts-noto-cjk:
     kind: system_package
     manager: apt
     package: fonts-noto-cjk
@@ -182,7 +180,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "mise/npm:defuddle":
+  mise/npm:defuddle:
     kind: global_cli
     manager: mise
     package: npm:defuddle
@@ -190,7 +188,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "mise/npm:pnpm":
+  mise/npm:pnpm:
     kind: global_cli
     manager: mise
     package: npm:pnpm
@@ -198,7 +196,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "mise/npm:docx":
+  mise/npm:docx:
     kind: global_cli
     manager: mise
     package: npm:docx
@@ -206,7 +204,7 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "mise/npm:pptxgenjs":
+  mise/npm:pptxgenjs:
     kind: global_cli
     manager: mise
     package: npm:pptxgenjs
@@ -214,162 +212,159 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-
-  "uv-pkg/lxml":
-    kind: python_package
+  uv-pkg/lxml:
+    kind: python_project_dependency
     manager: uv
     package: lxml
-    install: uv pip install --system lxml
-    fallback_install: uv pip install --python 3.12 lxml
+    install: uv add --raw lxml && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/openpyxl":
-    kind: python_package
+    remove: uv remove lxml && uv sync --python 3.12
+  uv-pkg/openpyxl:
+    kind: python_project_dependency
     manager: uv
     package: openpyxl
-    install: uv pip install --system openpyxl
-    fallback_install: uv pip install --python 3.12 openpyxl
+    install: uv add --raw openpyxl && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/pandas":
-    kind: python_package
+    remove: uv remove openpyxl && uv sync --python 3.12
+  uv-pkg/pandas:
+    kind: python_project_dependency
     manager: uv
     package: pandas
-    install: uv pip install --system pandas
-    fallback_install: uv pip install --python 3.12 pandas
+    install: uv add --raw pandas && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/pypdf":
-    kind: python_package
+    remove: uv remove pandas && uv sync --python 3.12
+  uv-pkg/pypdf:
+    kind: python_project_dependency
     manager: uv
     package: pypdf
-    install: uv pip install --system pypdf
-    fallback_install: uv pip install --python 3.12 pypdf
+    install: uv add --raw pypdf && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/weasyprint":
-    kind: python_package
+    remove: uv remove pypdf && uv sync --python 3.12
+  uv-pkg/weasyprint:
+    kind: python_project_dependency
     manager: uv
     package: weasyprint
-    install: uv pip install --system weasyprint
-    fallback_install: uv pip install --python 3.12 weasyprint
+    install: uv add --raw weasyprint && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/pdfplumber":
-    kind: python_package
+    remove: uv remove weasyprint && uv sync --python 3.12
+  uv-pkg/pdfplumber:
+    kind: python_project_dependency
     manager: uv
     package: pdfplumber
-    install: uv pip install --system pdfplumber
-    fallback_install: uv pip install --python 3.12 pdfplumber
+    install: uv add --raw pdfplumber && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/pdf2image":
-    kind: python_package
+    remove: uv remove pdfplumber && uv sync --python 3.12
+  uv-pkg/pdf2image:
+    kind: python_project_dependency
     manager: uv
     package: pdf2image
-    install: uv pip install --system pdf2image
-    fallback_install: uv pip install --python 3.12 pdf2image
+    install: uv add --raw pdf2image && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/reportlab":
-    kind: python_package
+    remove: uv remove pdf2image && uv sync --python 3.12
+  uv-pkg/reportlab:
+    kind: python_project_dependency
     manager: uv
     package: reportlab
-    install: uv pip install --system reportlab
-    fallback_install: uv pip install --python 3.12 reportlab
+    install: uv add --raw reportlab && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/pytesseract":
-    kind: python_package
+    remove: uv remove reportlab && uv sync --python 3.12
+  uv-pkg/pytesseract:
+    kind: python_project_dependency
     manager: uv
     package: pytesseract
-    install: uv pip install --system pytesseract
-    fallback_install: uv pip install --python 3.12 pytesseract
+    install: uv add --raw pytesseract && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/pillow":
-    kind: python_package
+    remove: uv remove pytesseract && uv sync --python 3.12
+  uv-pkg/pillow:
+    kind: python_project_dependency
     manager: uv
     package: pillow
-    install: uv pip install --system pillow
-    fallback_install: uv pip install --python 3.12 pillow
+    install: uv add --raw pillow && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/playwright":
-    kind: python_package
+    remove: uv remove pillow && uv sync --python 3.12
+  uv-pkg/playwright:
+    kind: python_project_dependency
     manager: uv
     package: playwright
-    install: uv pip install --system playwright
-    fallback_install: uv pip install --python 3.12 playwright
+    install: uv add --raw playwright && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/pygments":
-    kind: python_package
+    remove: uv remove playwright && uv sync --python 3.12
+  uv-pkg/pygments:
+    kind: python_project_dependency
     manager: uv
     package: Pygments
-    install: uv pip install --system Pygments
-    fallback_install: uv pip install --python 3.12 Pygments
+    install: uv add --raw Pygments && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/pymupdf":
-    kind: python_package
+    remove: uv remove Pygments && uv sync --python 3.12
+  uv-pkg/pymupdf:
+    kind: python_project_dependency
     manager: uv
     package: pymupdf
-    install: uv pip install --system pymupdf
-    fallback_install: uv pip install --python 3.12 pymupdf
+    install: uv add --raw pymupdf && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/numpy":
-    kind: python_package
+    remove: uv remove pymupdf && uv sync --python 3.12
+  uv-pkg/numpy:
+    kind: python_project_dependency
     manager: uv
     package: numpy
-    install: uv pip install --system numpy
-    fallback_install: uv pip install --python 3.12 numpy
+    install: uv add --raw numpy && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/python-pptx":
-    kind: python_package
+    remove: uv remove numpy && uv sync --python 3.12
+  uv-pkg/python-pptx:
+    kind: python_project_dependency
     manager: uv
     package: python-pptx
-    install: uv pip install --system python-pptx
-    fallback_install: uv pip install --python 3.12 python-pptx
+    install: uv add --raw python-pptx && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "uv-pkg/markitdown[pptx]":
-    kind: python_package
+    remove: uv remove python-pptx && uv sync --python 3.12
+  uv-pkg/markitdown[pptx]:
+    kind: python_project_dependency
     manager: uv
     package: markitdown[pptx]
-    install: uv pip install --system "markitdown[pptx]"
-    fallback_install: uv pip install --python 3.12 "markitdown[pptx]"
+    install: uv add --raw "markitdown[pptx]" && uv sync --python 3.12
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-
-  "host/playwright-chromium":
+    remove: uv remove "markitdown[pptx]" && uv sync --python 3.12
+  host/playwright-chromium:
     kind: browser_payload
     manager: uv
     package: playwright chromium payload
-    install: python -m playwright install chromium
-    fallback_install: uv run --python 3.12 python -m playwright install chromium
+    install: uv run python -m playwright install chromium
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
-  "host/drawio-desktop":
+  host/drawio-desktop:
     kind: host_application
     manager: manual
     package: draw.io Desktop
@@ -377,7 +372,7 @@ environments:
     shared: true
     managed_by_repo: false
     removable_when_unreferenced: manual
-  "host/obsidian-command":
+  host/obsidian-command:
     kind: host_application
     manager: manual
     package: obsidian command or launcher
@@ -385,7 +380,28 @@ environments:
     shared: false
     managed_by_repo: false
     removable_when_unreferenced: manual
-
+  uv-pkg/beautifulsoup4:
+    kind: python_project_dependency
+    manager: uv
+    package: beautifulsoup4
+    install: uv add --raw beautifulsoup4 && uv sync --python 3.12
+    remove: uv remove beautifulsoup4 && uv sync --python 3.12
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
+    notes:
+    - skills/read/scripts/fetch_weixin.py imports bs4.BeautifulSoup
+  uv-pkg/pyyaml:
+    kind: python_project_dependency
+    manager: uv
+    package: pyyaml
+    install: uv add --raw pyyaml && uv sync --python 3.12
+    remove: uv remove pyyaml && uv sync --python 3.12
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: false
+    notes:
+    - README/catalog verification imports yaml
 sources:
   anthropics-skills:
     repo_url: https://github.com/anthropics/skills
@@ -396,15 +412,15 @@ sources:
     synced_commit: c68c84c
     upstream_skill_root: skills
     notes:
-      - primary public upstream for commit, update-changelog, and uv
-      - dot-agent republishes at least some of these skills, but the local copies match agent-stuff exactly
+    - primary public upstream for commit, update-changelog, and uv
+    - dot-agent republishes at least some of these skills, but the local copies match agent-stuff exactly
   obsidian-skills:
     repo_url: https://github.com/kepano/obsidian-skills
     synced_commit: a1dc48e
     upstream_skill_root: skills
     notes:
-      - authoritative public upstream for defuddle, json-canvas, obsidian-bases, obsidian-cli, and obsidian-markdown
-      - the local copies of those five skills currently match this upstream exactly
+    - authoritative public upstream for defuddle, json-canvas, obsidian-bases, obsidian-cli, and obsidian-markdown
+    - the local copies of those five skills currently match this upstream exactly
   vercel-agent-skills:
     repo_url: https://github.com/vercel-labs/agent-skills
     synced_commit: 4ec6f84
@@ -414,13 +430,13 @@ sources:
     synced_commit: 99235d5
     upstream_skill_root: skill-cli
     notes:
-      - local copy intentionally keeps Codex-specific wording adjustments
+    - local copy intentionally keeps Codex-specific wording adjustments
   local-wrappers:
     repo_url: local
     synced_commit: local
     upstream_skill_root: skills
     notes:
-      - locally authored wrappers maintained in this repository
+    - locally authored wrappers maintained in this repository
   keep-codex-fast:
     repo_url: https://github.com/vibeforge1111/keep-codex-fast
     synced_commit: e74c449
@@ -438,371 +454,376 @@ sources:
     synced_commit: 60091e1
     upstream_skill_root: skills
 skills:
-  - name: beautiful-mermaid
-    source: local-wrappers
-    local_path: skills/beautiful-mermaid
-    upstream_path: skills/beautiful-mermaid
-    upstream_url: https://github.com/lukilabs/beautiful-mermaid
-    purpose: Render Mermaid diagrams to SVG or ASCII/Unicode terminal art.
-    depends_on:
-      - runtime/node
-    notes:
-      - local wrapper around npm package beautiful-mermaid@1.1.3
-      - upstream .agents/skills/editor.md is for maintaining the upstream live editor and is not mirrored here
-      - package has no npm bin, so use scripts/render.mjs instead of mise/npm:beautiful-mermaid
-
-  - name: restoration
-    source: local-wrappers
-    local_path: skills/restoration
-    upstream_path: skills/restoration
-    upstream_url: local
-    purpose: Enhance raster images with forced $imagegen usage, best-effort watermark removal, source-directory output for local files, and Windows Pictures output for pasted images.
-    depends_on:
-      - host/system-python
-    notes:
-      - locally authored skill that delegates image restoration and watermark removal to $imagegen
-
-  - name: canvas-design
-    source: anthropics-skills
-    local_path: skills/canvas-design
-    upstream_path: skills/canvas-design
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/canvas-design
-    purpose: Create visual art in PNG or PDF form.
-    depends_on: []
-
-  - name: commit
-    source: agent-stuff
-    local_path: skills/commit
-    upstream_path: skills/commit
-    upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/commit
-    purpose: Create Conventional Commits safely from local changes.
-    depends_on: []
-    notes:
-      - dot-agent also carries a near-identical copy, but the local file matches agent-stuff exactly
-
-  - name: defuddle
-    source: obsidian-skills
-    local_path: skills/defuddle
-    upstream_path: skills/defuddle
-    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle
-    purpose: Extract clean markdown from web pages with Defuddle.
-    depends_on:
-      - runtime/node
-      - mise/npm:defuddle
-    notes:
-      - treat as a maintained wrapper around the CLI rather than a perfect mirror guarantee
-
-  - name: docx
-    source: anthropics-skills
-    local_path: skills/docx
-    upstream_path: skills/docx
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/docx
-    purpose: Read, create, and edit Word documents.
-    depends_on:
-      - runtime/node
-      - host/system-python
-      - apt/pandoc
-      - apt/libreoffice
-      - apt/poppler-utils
-      - mise/npm:docx
-      - uv-pkg/lxml
-
-  - name: drawio
-    source: drawio-mcp
-    local_path: skills/drawio
-    upstream_path: skill-cli/drawio
-    upstream_url: https://github.com/jgraph/drawio-mcp/tree/main/skill-cli/drawio
-    purpose: Create draw.io diagrams and optionally export them.
-    depends_on: []
-    optional_depends_on:
-      - host/drawio-desktop
-    notes:
-      - local copy keeps Codex-specific wording for file editing and open commands
-
-  - name: frontend-design
-    source: anthropics-skills
-    local_path: skills/frontend-design
-    upstream_path: skills/frontend-design
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/frontend-design
-    purpose: Create high-quality frontend interfaces and layouts.
-    depends_on: []
-
-  - name: json-canvas
-    source: obsidian-skills
-    local_path: skills/json-canvas
-    upstream_path: skills/json-canvas
-    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas
-    purpose: Create and edit JSON Canvas files.
-    depends_on: []
-
-  - name: kami
-    source: kami
-    local_path: skills/kami
-    upstream_path: .
-    upstream_url: https://github.com/tw93/Kami
-    purpose: Typeset professional documents, slide decks, and product landing pages.
-    depends_on:
-      - host/system-python
-      - apt/libcairo2
-      - apt/libpango-1.0-0
-      - apt/libpangoft2-1.0-0
-      - apt/libharfbuzz0b
-      - apt/poppler-utils
-      - uv-pkg/weasyprint
-      - uv-pkg/pypdf
-    optional_depends_on:
-      - apt/fonts-noto-cjk
-      - uv-pkg/pygments
-      - uv-pkg/pymupdf
-      - uv-pkg/numpy
-      - uv-pkg/python-pptx
-    notes:
-      - Marp rendering is documented upstream as a user-provided local install and is not managed by this mirror.
-
-  - name: keep-codex-fast
-    source: keep-codex-fast
-    local_path: skills/keep-codex-fast
-    upstream_path: .
-    upstream_url: https://github.com/vibeforge1111/keep-codex-fast
-    purpose: Inspect and safely maintain local Codex state with backups and archives.
-    depends_on:
-      - host/system-python
-
-  - name: check
-    source: waza
-    local_path: skills/check
-    upstream_path: skills/check
-    upstream_url: https://github.com/tw93/Waza/tree/main/skills/check
-    purpose: Review diffs, PRs, release readiness, commits, pushes, publishing, and project audits.
-    depends_on:
-      - host/system-python
-
-  - name: design
-    source: waza
-    local_path: skills/design
-    upstream_path: skills/design
-    upstream_url: https://github.com/tw93/Waza/tree/main/skills/design
-    purpose: Produce distinctive frontend UI direction and screenshot-driven polish.
-    depends_on: []
-
-  - name: health
-    source: waza
-    local_path: skills/health
-    upstream_path: skills/health
-    upstream_url: https://github.com/tw93/Waza/tree/main/skills/health
-    purpose: Audit agent instruction/config drift, hooks, MCP, verifier surfaces, and maintainability.
-    depends_on:
-      - host/system-python
-
-  - name: hunt
-    source: waza
-    local_path: skills/hunt
-    upstream_path: skills/hunt
-    upstream_url: https://github.com/tw93/Waza/tree/main/skills/hunt
-    purpose: Debug errors, regressions, and broken behavior by confirming root cause before fixing.
-    depends_on: []
-
-  - name: learn
-    source: waza
-    local_path: skills/learn
-    upstream_path: skills/learn
-    upstream_url: https://github.com/tw93/Waza/tree/main/skills/learn
-    purpose: Turn unfamiliar domains or source bundles into coherent publish-ready output.
-    depends_on: []
-
-  - name: read
-    source: waza
-    local_path: skills/read
-    upstream_path: skills/read
-    upstream_url: https://github.com/tw93/Waza/tree/main/skills/read
-    purpose: Read URLs and PDFs, returning concise summaries or clean Markdown for downstream use.
-    depends_on:
-      - host/system-python
-
-  - name: think
-    source: waza
-    local_path: skills/think
-    upstream_path: skills/think
-    upstream_url: https://github.com/tw93/Waza/tree/main/skills/think
-    purpose: Turn rough ideas into approved, decision-complete plans before implementation.
-    depends_on: []
-
-  - name: write
-    source: waza
-    local_path: skills/write
-    upstream_path: skills/write
-    upstream_url: https://github.com/tw93/Waza/tree/main/skills/write
-    purpose: Rewrite and polish Chinese or English prose while preserving intent.
-    depends_on: []
-
-  - name: obsidian-bases
-    source: obsidian-skills
-    local_path: skills/obsidian-bases
-    upstream_path: skills/obsidian-bases
-    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-bases
-    purpose: Create and edit Obsidian Bases files.
-    depends_on: []
-
-  - name: obsidian-cli
-    source: obsidian-skills
-    local_path: skills/obsidian-cli
-    upstream_path: skills/obsidian-cli
-    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli
-    purpose: Operate on Obsidian vaults from the command line.
-    depends_on:
-      - host/obsidian-command
-
-  - name: obsidian-markdown
-    source: obsidian-skills
-    local_path: skills/obsidian-markdown
-    upstream_path: skills/obsidian-markdown
-    upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-markdown
-    purpose: Create and edit Obsidian-flavored markdown.
-    depends_on: []
-
-  - name: pdf
-    source: anthropics-skills
-    local_path: skills/pdf
-    upstream_path: skills/pdf
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/pdf
-    purpose: Read, generate, transform, and OCR PDF files.
-    depends_on:
-      - host/system-python
-      - apt/qpdf
-      - apt/pdftk-java
-      - apt/tesseract-ocr
-      - apt/poppler-utils
-      - uv-pkg/pypdf
-      - uv-pkg/pdfplumber
-      - uv-pkg/pdf2image
-      - uv-pkg/reportlab
-      - uv-pkg/pytesseract
-      - uv-pkg/pillow
-
-  - name: pptx
-    source: anthropics-skills
-    local_path: skills/pptx
-    upstream_path: skills/pptx
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/pptx
-    purpose: Read, create, and edit PowerPoint decks.
-    depends_on:
-      - runtime/node
-      - host/system-python
-      - apt/libreoffice
-      - apt/poppler-utils
-      - mise/npm:pptxgenjs
-      - uv-pkg/markitdown[pptx]
-      - uv-pkg/pillow
-      - uv-pkg/lxml
-
-  - name: threads
-    source: spellbook
-    local_path: skills/threads
-    upstream_path: skills/threads
-    upstream_url: https://github.com/majiayu000/spellbook/tree/main/skills/threads
-    purpose: Coordinate Codex-native parallel thread workflows.
-    depends_on: []
-
-  - name: update-changelog
-    source: agent-stuff
-    local_path: skills/update-changelog
-    upstream_path: skills/update-changelog
-    upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/update-changelog
-    purpose: Update changelog entries between releases.
-    depends_on: []
-    notes:
-      - dot-agent also carries a near-identical copy, but the local file matches agent-stuff exactly
-
-  - name: uv
-    source: agent-stuff
-    local_path: skills/uv
-    upstream_path: skills/uv
-    upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/uv
-    purpose: Use uv instead of pip, python, or venv.
-    depends_on: []
-    notes:
-      - this local file matches the public agent-stuff copy exactly
-
-  - name: vercel-composition-patterns
-    source: vercel-agent-skills
-    local_path: skills/vercel-composition-patterns
-    upstream_path: skills/composition-patterns
-    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns
-    purpose: Apply scalable React composition patterns.
-    depends_on: []
-    notes:
-      - local directory keeps the vercel-prefixed name for compatibility
-
-  - name: vercel-react-best-practices
-    source: vercel-agent-skills
-    local_path: skills/vercel-react-best-practices
-    upstream_path: skills/react-best-practices
-    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices
-    purpose: Use Vercel guidance for performant React and Next.js code.
-    depends_on: []
-    notes:
-      - local directory keeps the vercel-prefixed name for compatibility
-
-  - name: vercel-react-native-skills
-    source: vercel-agent-skills
-    local_path: skills/vercel-react-native-skills
-    upstream_path: skills/react-native-skills
-    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-native-skills
-    purpose: Apply React Native and Expo best practices.
-    depends_on: []
-    notes:
-      - local directory keeps the vercel-prefixed name for compatibility
-
-  - name: vercel-react-view-transitions
-    source: vercel-agent-skills
-    local_path: skills/vercel-react-view-transitions
-    upstream_path: skills/react-view-transitions
-    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-view-transitions
-    purpose: Apply React View Transition patterns and native-feeling route animations.
-    depends_on: []
-    notes:
-      - local directory keeps the vercel-prefixed name for compatibility
-
-  - name: web-artifacts-builder
-    source: anthropics-skills
-    local_path: skills/web-artifacts-builder
-    upstream_path: skills/web-artifacts-builder
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/web-artifacts-builder
-    purpose: Build complex HTML artifacts using modern frontend tooling.
-    depends_on:
-      - runtime/node
-      - mise/npm:pnpm
-
-  - name: web-design-guidelines
-    source: vercel-agent-skills
-    local_path: skills/web-design-guidelines
-    upstream_path: skills/web-design-guidelines
-    upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines
-    purpose: Review UI work against web interface guidelines.
-    depends_on: []
-    notes:
-      - the wrapper is local, but its effective rule set can evolve upstream independently
-
-  - name: webapp-testing
-    source: anthropics-skills
-    local_path: skills/webapp-testing
-    upstream_path: skills/webapp-testing
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/webapp-testing
-    purpose: Test local web apps with Playwright.
-    depends_on:
-      - host/system-python
-      - uv-pkg/playwright
-      - host/playwright-chromium
-
-  - name: xlsx
-    source: anthropics-skills
-    local_path: skills/xlsx
-    upstream_path: skills/xlsx
-    upstream_url: https://github.com/anthropics/skills/tree/main/skills/xlsx
-    purpose: Create, read, and modify spreadsheet files.
-    depends_on:
-      - host/system-python
-      - apt/libreoffice
-      - uv-pkg/openpyxl
-      - uv-pkg/pandas
-      - uv-pkg/lxml
+- name: beautiful-mermaid
+  source: local-wrappers
+  local_path: skills/beautiful-mermaid
+  upstream_path: skills/beautiful-mermaid
+  upstream_url: https://github.com/lukilabs/beautiful-mermaid
+  purpose: Render Mermaid diagrams to SVG or ASCII/Unicode terminal art.
+  depends_on:
+  - runtime/node
+  notes:
+  - local wrapper around npm package beautiful-mermaid@1.1.3
+  - upstream .agents/skills/editor.md is for maintaining the upstream live editor and is not mirrored here
+  - package has no npm bin, so use scripts/render.mjs instead of mise/npm:beautiful-mermaid
+  type: local_wrapper
+- name: restoration
+  source: local-wrappers
+  local_path: skills/restoration
+  upstream_path: skills/restoration
+  upstream_url: local
+  purpose: Enhance raster images with forced $imagegen usage, best-effort watermark removal, source-directory output for local files, and Windows Pictures output for pasted images.
+  depends_on:
+  - runtime/python
+  notes:
+  - locally authored skill that delegates image restoration and watermark removal to $imagegen
+  type: local_created
+- name: canvas-design
+  source: anthropics-skills
+  local_path: skills/canvas-design
+  upstream_path: skills/canvas-design
+  upstream_url: https://github.com/anthropics/skills/tree/main/skills/canvas-design
+  purpose: Create visual art in PNG or PDF form.
+  depends_on: []
+  type: upstream
+- name: commit
+  source: agent-stuff
+  local_path: skills/commit
+  upstream_path: skills/commit
+  upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/commit
+  purpose: Create Conventional Commits safely from local changes.
+  depends_on: []
+  notes:
+  - dot-agent also carries a near-identical copy, but the local file matches agent-stuff exactly
+  type: upstream
+- name: defuddle
+  source: obsidian-skills
+  local_path: skills/defuddle
+  upstream_path: skills/defuddle
+  upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle
+  purpose: Extract clean markdown from web pages with Defuddle.
+  depends_on:
+  - runtime/node
+  - mise/npm:defuddle
+  notes:
+  - treat as a maintained wrapper around the CLI rather than a perfect mirror guarantee
+  type: upstream
+- name: docx
+  source: anthropics-skills
+  local_path: skills/docx
+  upstream_path: skills/docx
+  upstream_url: https://github.com/anthropics/skills/tree/main/skills/docx
+  purpose: Read, create, and edit Word documents.
+  depends_on:
+  - runtime/node
+  - runtime/python
+  - apt/pandoc
+  - apt/libreoffice
+  - apt/poppler-utils
+  - mise/npm:docx
+  - uv-pkg/lxml
+  type: upstream
+- name: drawio
+  source: drawio-mcp
+  local_path: skills/drawio
+  upstream_path: skill-cli/drawio
+  upstream_url: https://github.com/jgraph/drawio-mcp/tree/main/skill-cli/drawio
+  purpose: Create draw.io diagrams and optionally export them.
+  depends_on: []
+  optional_depends_on:
+  - host/drawio-desktop
+  notes:
+  - local copy keeps Codex-specific wording for file editing and open commands
+  type: upstream
+- name: frontend-design
+  source: anthropics-skills
+  local_path: skills/frontend-design
+  upstream_path: skills/frontend-design
+  upstream_url: https://github.com/anthropics/skills/tree/main/skills/frontend-design
+  purpose: Create high-quality frontend interfaces and layouts.
+  depends_on: []
+  type: upstream
+- name: json-canvas
+  source: obsidian-skills
+  local_path: skills/json-canvas
+  upstream_path: skills/json-canvas
+  upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas
+  purpose: Create and edit JSON Canvas files.
+  depends_on: []
+  type: upstream
+- name: kami
+  source: kami
+  local_path: skills/kami
+  upstream_path: .
+  upstream_url: https://github.com/tw93/Kami
+  purpose: Typeset professional documents, slide decks, and product landing pages.
+  depends_on:
+  - runtime/python
+  - apt/libcairo2
+  - apt/libpango-1.0-0
+  - apt/libpangoft2-1.0-0
+  - apt/libharfbuzz0b
+  - apt/poppler-utils
+  - uv-pkg/weasyprint
+  - uv-pkg/pypdf
+  optional_depends_on:
+  - apt/fonts-noto-cjk
+  - uv-pkg/pygments
+  - uv-pkg/pymupdf
+  - uv-pkg/numpy
+  - uv-pkg/python-pptx
+  notes:
+  - Marp rendering is documented upstream as a user-provided local install and is not managed by this mirror.
+  type: upstream
+- name: keep-codex-fast
+  source: keep-codex-fast
+  local_path: skills/keep-codex-fast
+  upstream_path: .
+  upstream_url: https://github.com/vibeforge1111/keep-codex-fast
+  purpose: Inspect and safely maintain local Codex state with backups and archives.
+  depends_on:
+  - runtime/python
+  type: upstream
+- name: check
+  source: waza
+  local_path: skills/check
+  upstream_path: skills/check
+  upstream_url: https://github.com/tw93/Waza/tree/main/skills/check
+  purpose: Review diffs, PRs, release readiness, commits, pushes, publishing, and project audits.
+  depends_on:
+  - runtime/python
+  type: upstream
+- name: design
+  source: waza
+  local_path: skills/design
+  upstream_path: skills/design
+  upstream_url: https://github.com/tw93/Waza/tree/main/skills/design
+  purpose: Produce distinctive frontend UI direction and screenshot-driven polish.
+  depends_on: []
+  type: upstream
+- name: health
+  source: waza
+  local_path: skills/health
+  upstream_path: skills/health
+  upstream_url: https://github.com/tw93/Waza/tree/main/skills/health
+  purpose: Audit agent instruction/config drift, hooks, MCP, verifier surfaces, and maintainability.
+  depends_on:
+  - runtime/python
+  type: upstream
+- name: hunt
+  source: waza
+  local_path: skills/hunt
+  upstream_path: skills/hunt
+  upstream_url: https://github.com/tw93/Waza/tree/main/skills/hunt
+  purpose: Debug errors, regressions, and broken behavior by confirming root cause before fixing.
+  depends_on: []
+  type: upstream
+- name: learn
+  source: waza
+  local_path: skills/learn
+  upstream_path: skills/learn
+  upstream_url: https://github.com/tw93/Waza/tree/main/skills/learn
+  purpose: Turn unfamiliar domains or source bundles into coherent publish-ready output.
+  depends_on: []
+  type: upstream
+- name: read
+  source: waza
+  local_path: skills/read
+  upstream_path: skills/read
+  upstream_url: https://github.com/tw93/Waza/tree/main/skills/read
+  purpose: Read URLs and PDFs, returning concise summaries or clean Markdown for downstream use.
+  depends_on:
+  - runtime/python
+  type: upstream
+  optional_depends_on:
+  - uv-pkg/playwright
+  - host/playwright-chromium
+  - uv-pkg/beautifulsoup4
+- name: think
+  source: waza
+  local_path: skills/think
+  upstream_path: skills/think
+  upstream_url: https://github.com/tw93/Waza/tree/main/skills/think
+  purpose: Turn rough ideas into approved, decision-complete plans before implementation.
+  depends_on: []
+  type: upstream
+- name: write
+  source: waza
+  local_path: skills/write
+  upstream_path: skills/write
+  upstream_url: https://github.com/tw93/Waza/tree/main/skills/write
+  purpose: Rewrite and polish Chinese or English prose while preserving intent.
+  depends_on: []
+  type: upstream
+- name: obsidian-bases
+  source: obsidian-skills
+  local_path: skills/obsidian-bases
+  upstream_path: skills/obsidian-bases
+  upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-bases
+  purpose: Create and edit Obsidian Bases files.
+  depends_on: []
+  type: upstream
+- name: obsidian-cli
+  source: obsidian-skills
+  local_path: skills/obsidian-cli
+  upstream_path: skills/obsidian-cli
+  upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli
+  purpose: Operate on Obsidian vaults from the command line.
+  depends_on:
+  - host/obsidian-command
+  type: upstream
+- name: obsidian-markdown
+  source: obsidian-skills
+  local_path: skills/obsidian-markdown
+  upstream_path: skills/obsidian-markdown
+  upstream_url: https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-markdown
+  purpose: Create and edit Obsidian-flavored markdown.
+  depends_on: []
+  type: upstream
+- name: pdf
+  source: anthropics-skills
+  local_path: skills/pdf
+  upstream_path: skills/pdf
+  upstream_url: https://github.com/anthropics/skills/tree/main/skills/pdf
+  purpose: Read, generate, transform, and OCR PDF files.
+  depends_on:
+  - runtime/python
+  - apt/qpdf
+  - apt/pdftk-java
+  - apt/tesseract-ocr
+  - apt/poppler-utils
+  - uv-pkg/pypdf
+  - uv-pkg/pdfplumber
+  - uv-pkg/pdf2image
+  - uv-pkg/reportlab
+  - uv-pkg/pytesseract
+  - uv-pkg/pillow
+  type: upstream
+- name: pptx
+  source: anthropics-skills
+  local_path: skills/pptx
+  upstream_path: skills/pptx
+  upstream_url: https://github.com/anthropics/skills/tree/main/skills/pptx
+  purpose: Read, create, and edit PowerPoint decks.
+  depends_on:
+  - runtime/node
+  - runtime/python
+  - apt/libreoffice
+  - apt/poppler-utils
+  - mise/npm:pptxgenjs
+  - uv-pkg/markitdown[pptx]
+  - uv-pkg/pillow
+  - uv-pkg/lxml
+  type: upstream
+- name: threads
+  source: spellbook
+  local_path: skills/threads
+  upstream_path: skills/threads
+  upstream_url: https://github.com/majiayu000/spellbook/tree/main/skills/threads
+  purpose: Coordinate Codex-native parallel thread workflows.
+  depends_on: []
+  type: upstream
+- name: update-changelog
+  source: agent-stuff
+  local_path: skills/update-changelog
+  upstream_path: skills/update-changelog
+  upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/update-changelog
+  purpose: Update changelog entries between releases.
+  depends_on: []
+  notes:
+  - dot-agent also carries a near-identical copy, but the local file matches agent-stuff exactly
+  type: upstream
+- name: uv
+  source: agent-stuff
+  local_path: skills/uv
+  upstream_path: skills/uv
+  upstream_url: https://github.com/mitsuhiko/agent-stuff/tree/main/skills/uv
+  purpose: Use uv instead of pip, python, or venv.
+  depends_on: []
+  notes:
+  - this local file matches the public agent-stuff copy exactly
+  type: upstream
+- name: vercel-composition-patterns
+  source: vercel-agent-skills
+  local_path: skills/vercel-composition-patterns
+  upstream_path: skills/composition-patterns
+  upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns
+  purpose: Apply scalable React composition patterns.
+  depends_on: []
+  notes:
+  - local directory keeps the vercel-prefixed name for compatibility
+  type: upstream
+- name: vercel-react-best-practices
+  source: vercel-agent-skills
+  local_path: skills/vercel-react-best-practices
+  upstream_path: skills/react-best-practices
+  upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices
+  purpose: Use Vercel guidance for performant React and Next.js code.
+  depends_on: []
+  notes:
+  - local directory keeps the vercel-prefixed name for compatibility
+  type: upstream
+- name: vercel-react-native-skills
+  source: vercel-agent-skills
+  local_path: skills/vercel-react-native-skills
+  upstream_path: skills/react-native-skills
+  upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-native-skills
+  purpose: Apply React Native and Expo best practices.
+  depends_on: []
+  notes:
+  - local directory keeps the vercel-prefixed name for compatibility
+  type: upstream
+- name: vercel-react-view-transitions
+  source: vercel-agent-skills
+  local_path: skills/vercel-react-view-transitions
+  upstream_path: skills/react-view-transitions
+  upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-view-transitions
+  purpose: Apply React View Transition patterns and native-feeling route animations.
+  depends_on: []
+  notes:
+  - local directory keeps the vercel-prefixed name for compatibility
+  type: upstream
+- name: web-artifacts-builder
+  source: anthropics-skills
+  local_path: skills/web-artifacts-builder
+  upstream_path: skills/web-artifacts-builder
+  upstream_url: https://github.com/anthropics/skills/tree/main/skills/web-artifacts-builder
+  purpose: Build complex HTML artifacts using modern frontend tooling.
+  depends_on:
+  - runtime/node
+  - mise/npm:pnpm
+  type: upstream
+- name: web-design-guidelines
+  source: vercel-agent-skills
+  local_path: skills/web-design-guidelines
+  upstream_path: skills/web-design-guidelines
+  upstream_url: https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines
+  purpose: Review UI work against web interface guidelines.
+  depends_on: []
+  notes:
+  - the wrapper is local, but its effective rule set can evolve upstream independently
+  type: upstream
+- name: webapp-testing
+  source: anthropics-skills
+  local_path: skills/webapp-testing
+  upstream_path: skills/webapp-testing
+  upstream_url: https://github.com/anthropics/skills/tree/main/skills/webapp-testing
+  purpose: Test local web apps with Playwright.
+  depends_on:
+  - runtime/python
+  - uv-pkg/playwright
+  - host/playwright-chromium
+  type: upstream
+- name: xlsx
+  source: anthropics-skills
+  local_path: skills/xlsx
+  upstream_path: skills/xlsx
+  upstream_url: https://github.com/anthropics/skills/tree/main/skills/xlsx
+  purpose: Create, read, and modify spreadsheet files.
+  depends_on:
+  - runtime/python
+  - apt/libreoffice
+  - uv-pkg/openpyxl
+  - uv-pkg/pandas
+  - uv-pkg/lxml
+  type: upstream

@@ -13,20 +13,21 @@ Your job is to keep four things consistent:
 1. `skills/` contains the actual local skill folders.
 2. `catalog.yaml` is the source of truth for provenance, dependencies, cleanup behavior, and maintenance policy.
 3. `mise.toml` declares the curated runtime and global CLI layer.
-4. `uv-requirements.txt` declares the curated shared Python package layer.
+4. `pyproject.toml` and `uv.lock` declare the curated project-local Python environment.
 
 Python policy in this repo:
 
-- CLI tools: install with `uv tool install`
-- Python packages for the default machine Python: install with `uv pip install --system`
-- Do not pin a Python version if the system already has a usable default Python
-- If the machine has no usable Python, let `uv` download one explicitly, for example `uv python install 3.12`
+- Python packages are managed in `pyproject.toml` with `uv add`, `uv remove`, and `uv sync`.
+- Python packages must not be installed into the system Python for this repo.
+- Prefer Python 3.12 for the project environment: `uv sync --python 3.12` creates or updates `.venv`.
+- CLI tools that are standalone global tools still use the existing manager documented for that tool: `mise` for npm-backed CLIs. Do not add a Python `uv tool install` policy unless a future tool requires it.
 
 ## Primary Files
 
 - `catalog.yaml`
 - `mise.toml`
-- `uv-requirements.txt`
+- `pyproject.toml`
+- `uv.lock`
 - `skills/`
 
 ## Hard Rules
@@ -35,7 +36,7 @@ Python policy in this repo:
 2. Do not persist absolute repository paths in tracked files when a repo-relative form is possible.
 3. Do not guess a skill's upstream. Use `catalog.yaml`.
 4. Do not remove a shared environment until no skill references it.
-5. Do not use `rsync --delete` or equivalent destructive sync behavior by default.
+5. Upstream-backed skill refreshes use `rsync -a --delete` after confirming the catalog entry is not a local-created skill; local-created skills are never overwritten from an upstream directory.
 6. When uninstalling a skill, delete that skill's own generated user data and local state by default.
 7. Only keep skill-generated data if the uninstall task explicitly asks to preserve it.
 8. If a skill has local wording adaptations or bootstrap artifacts, preserve them unless the maintenance task explicitly says to replace them.
@@ -64,11 +65,12 @@ This explains how to refresh local skill folders from upstream.
 
 Current meaning:
 
-- preferred copy mode: `rsync -a`
-- default deletion policy: do not delete local extras
-- rationale: some skill folders intentionally keep local bootstrap artifacts or tiny local wording changes
+- preferred copy mode: `rsync -a --delete`
+- default deletion policy: delete local extras when syncing upstream-backed skills
+- local-created skills are exempt because their source of truth is this repository
+- local wrappers follow their catalog notes instead of wholesale replacement unless those notes explicitly say the wrapper mirrors upstream
 
-In plain language: sync forward carefully, but do not assume the local mirror must be byte-identical to upstream after every update.
+In plain language: upstream-backed skill folders are refreshed as mirrors of their recorded upstream path, while local-created skills are edited directly in this repository.
 
 ### Source Garbage Collection
 
@@ -137,23 +139,27 @@ mise install
 
 This installs the curated Node runtime layer and the global npm-backed CLI layer defined in `mise.toml`.
 
-### 4. Install Python packages with `uv`
+### 4. Create or update the project Python environment with `uv`
 
 ```bash
 cd "$REPO_ROOT"
-uv pip install --system -r uv-requirements.txt
-python -m playwright install chromium
+uv sync --python 3.12
+uv run python -m playwright install chromium
 ```
 
-If the machine does not already have a usable system Python, use a fallback interpreter managed by `uv`:
+`uv sync --python 3.12` creates or updates `$REPO_ROOT/.venv`.
 
-```bash
-uv python install 3.12
-uv pip install --python 3.12 -r uv-requirements.txt
-uv run --python 3.12 python -m playwright install chromium
+### 5. Expose the repo Python environment first on PATH
+
+Edit `~/.config/env.sh` so later path prepends put the repo virtual environment before system Python. Add this line immediately after the existing `_env_prepend_path "$HOME/llama.cpp/build/bin"` line:
+
+```sh
+_env_prepend_path "$HOME/qingyun-skills/.venv/bin"
 ```
 
-### 5. Create the `.agents` symlink
+After `.venv` exists and `~/.config/env.sh` is sourced, `python` should resolve to `$REPO_ROOT/.venv/bin/python`.
+
+### 6. Create the `.agents` symlink
 
 ```bash
 mkdir -p "$HOME/.agents"
@@ -165,20 +171,24 @@ ln -sfn "$REPO_ROOT/skills" "$HOME/.agents/skills"
 When updating one skill or a group of skills:
 
 1. Look up the skill entry in `catalog.yaml`.
-2. Use its `source`, `upstream_path`, and `upstream_url` to locate the correct upstream folder.
-3. Refresh the upstream clone.
-4. Copy the upstream folder into the matching local folder with `rsync -a`.
-5. Preserve any local exceptions documented in `notes`.
-6. Re-run any skill-specific bootstrap steps if needed.
-7. Verify the updated skill still resolves through `.agents/skills`.
+2. Check the skill `type` before copying anything:
+   - If `type: local_created`, do not run upstream `rsync`; edit the local skill directly.
+   - If `type: local_wrapper`, follow the entry `notes` and do not replace the wrapper wholesale unless the notes explicitly say the wrapper mirrors upstream.
+   - If `type: upstream`, continue with the upstream refresh.
+3. Use its `source`, `upstream_path`, and `upstream_url` to locate the correct upstream folder.
+4. Refresh the upstream clone.
+5. Copy the upstream folder into the matching local folder with `rsync -a --delete`.
+6. Review `notes` before syncing and preserve any documented local exceptions.
+7. Re-run any skill-specific bootstrap steps if needed.
+8. Verify the updated skill still resolves through `.agents/skills`.
 
-Example upgrade command pattern:
+Example upgrade command pattern for upstream-backed skills:
 
 ```bash
-rsync -a "$UPSTREAM_DIR/" "$REPO_ROOT/skills/<skill-name>/"
+rsync -a --delete "$UPSTREAM_DIR/" "$REPO_ROOT/skills/<skill-name>/"
 ```
 
-Do not add `--delete` unless the maintenance task explicitly calls for destructive cleanup and you have reviewed local-only artifacts first.
+`--delete` is required for upstream-backed skills, so review `notes` before syncing and never apply the upstream rsync command to `local_created` skills.
 
 ## Uninstall Workflow
 
@@ -197,7 +207,7 @@ When removing one skill cleanly:
 To see which skills still use a given environment:
 
 ```bash
-python3 - <<'PY'
+uv run python - <<'PY'
 import yaml
 from pathlib import Path
 
@@ -228,22 +238,26 @@ Examples:
 - `mise uninstall node`
 - `mise uninstall npm:defuddle`
 
-### Remove shared `uv` Python packages from the system Python
+### Add project Python packages with `uv`
 
 ```bash
-uv pip uninstall --system <package-name>
+uv add --raw <package-name>
+uv sync --python 3.12
+```
+
+Use `--raw` so unpinned package names stay unpinned unless the maintainer intentionally supplies a version specifier.
+
+### Remove project Python packages with `uv`
+
+```bash
+uv remove <package-name>
+uv sync --python 3.12
 ```
 
 Examples:
 
-- `uv pip uninstall --system playwright`
-- `uv pip uninstall --system lxml`
-
-If the machine is using the fallback Python that `uv` downloaded instead of a system Python, use the matching fallback form:
-
-```bash
-uv pip uninstall --python 3.12 <package-name>
-```
+- `uv remove playwright`
+- `uv remove lxml`
 
 ### Remove apt-managed packages
 
@@ -267,8 +281,12 @@ Run this after install, upgrade, or uninstall work:
 
 ```bash
 cd "$REPO_ROOT"
+uv sync --python 3.12
+. "$HOME/.config/env.sh"
+command -v python
+python -c 'import sys; assert sys.executable.endswith("/qingyun-skills/.venv/bin/python"), sys.executable; assert sys.version_info[:2] == (3, 12), sys.version'
 
-python3 - <<'PY'
+uv run python - <<'PY'
 import yaml
 from pathlib import Path
 
@@ -279,18 +297,19 @@ for skill in catalog["skills"]:
     for key in skill.get("depends_on", []) + skill.get("optional_depends_on", []):
         if key not in envs:
             raise SystemExit(f"missing environment reference: {skill['name']} -> {key}")
+    if "type" not in skill:
+        raise SystemExit(f"missing skill type: {skill['name']}")
 
-print("catalog references are internally consistent")
+print("catalog references and skill types are internally consistent")
 PY
 
 test -L "$HOME/.agents/skills"
 test "$(readlink -f "$HOME/.agents/skills")" = "$REPO_ROOT/skills"
-ls -1 "$HOME/.agents/skills" | wc -l
 ```
 
 ## Short Decision Rules
 
 - Installing a new skill: add the skill entry, add any new shared environments if needed, then install only the missing environments.
-- Upgrading a skill: sync from the recorded upstream, preserve local exceptions, then verify.
+- Upgrading a skill: sync from the recorded upstream according to skill `type`, preserve local exceptions, then verify.
 - Removing a skill: remove the skill entry first, then garbage-collect only the unreferenced environments.
 - Unsure about an upstream: stop and update `catalog.yaml` before touching files.
