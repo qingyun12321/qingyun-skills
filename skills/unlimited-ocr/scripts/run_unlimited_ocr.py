@@ -33,6 +33,13 @@ def default_run_dir(repo: Path, input_path: Path) -> Path:
     return repo / "outputs" / "skill_ocr" / f"{safe_stem(input_path)}-{stamp}"
 
 
+def default_combined_md(input_path: Path, input_kind: str) -> Path:
+    if input_kind == "image_dir":
+        name = input_path.name or safe_stem(input_path)
+        return input_path.parent / f"{name}.md"
+    return input_path.with_suffix(".md")
+
+
 def detect_input(path: Path) -> str:
     if path.is_dir():
         return "image_dir"
@@ -103,6 +110,20 @@ def check_safe_exit(repo: Path, model_dir: Path, before: dict[int, str]) -> int:
     return 2
 
 
+def build_readable_markdown(output_dir: Path, combined_md: Path) -> int:
+    script = Path(__file__).with_name("build_readable_markdown.py")
+    completed = subprocess.run(
+        [
+            "python",
+            str(script),
+            str(output_dir),
+            "--output",
+            str(combined_md),
+        ]
+    )
+    return completed.returncode
+
+
 def build_infer_command(
     repo: Path,
     model_dir: Path,
@@ -161,6 +182,11 @@ def run(args: argparse.Namespace) -> int:
     run_dir = wsl_or_local_path(args.run_dir) if args.run_dir else default_run_dir(repo, input_path)
     output_dir = wsl_or_local_path(args.output_dir) if args.output_dir else run_dir / "pages"
     log_dir = run_dir / "_run"
+    combined_md = (
+        wsl_or_local_path(args.combined_md)
+        if args.combined_md
+        else default_combined_md(input_path, input_kind)
+    )
 
     server_log = log_dir / "sglang_server.log"
     infer_log = log_dir / "infer_run.log"
@@ -211,6 +237,7 @@ def run(args: argparse.Namespace) -> int:
         print("Model:", model_dir)
         print("Input:", input_path)
         print("Output Markdown:", output_dir)
+        print("Readable Markdown:", combined_md)
         print("Run logs:", log_dir)
         print("Command:", " ".join(cmd))
 
@@ -224,6 +251,9 @@ def run(args: argparse.Namespace) -> int:
         safe_exit_code = 0 if args.skip_exit_check else check_safe_exit(repo, model_dir, before_processes)
         if completed.returncode != 0:
             return completed.returncode
+        combine_code = build_readable_markdown(output_dir, combined_md)
+        if combine_code != 0:
+            return combine_code
         return safe_exit_code
     finally:
         if temp_dir is not None:
@@ -237,6 +267,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model-dir", default="~/models/baidu/Unlimited-OCR", help="Local model directory")
     parser.add_argument("--output-dir", default="", help="Directory for generated Markdown files")
     parser.add_argument("--run-dir", default="", help="Directory for logs and metrics")
+    parser.add_argument("--combined-md", default="", help="Path for the combined final Markdown")
     parser.add_argument("--concurrency", type=int, default=1)
     parser.add_argument("--gpu", default="0")
     parser.add_argument("--image-mode", choices=("auto", "base", "gundam"), default="auto")
