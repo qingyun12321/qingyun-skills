@@ -115,7 +115,7 @@ Suggested command for the user to run:
 ```bash
 sudo apt update
 sudo apt install -y \
-  libreoffice qpdf pdftk-java tesseract-ocr poppler-utils pandoc
+  libreoffice qpdf pdftk-java tesseract-ocr poppler-utils pandoc ffmpeg
 ```
 
 Host applications that are useful but not managed by this repo:

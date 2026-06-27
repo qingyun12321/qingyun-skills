@@ -135,6 +135,15 @@ environments:
     shared: true
     managed_by_repo: true
     removable_when_unreferenced: true
+  apt/ffmpeg:
+    kind: system_package
+    manager: apt
+    package: ffmpeg
+    install: sudo apt install -y ffmpeg
+    execution: user_manual_sudo_required
+    shared: true
+    managed_by_repo: true
+    removable_when_unreferenced: true
   apt/libcairo2:
     kind: system_package
     manager: apt
@@ -497,6 +506,19 @@ skills:
   - host/unlimited-ocr-local
   notes:
   - locally authored wrapper around the existing ~/Unlimited-OCR uv checkout and ~/models/baidu/Unlimited-OCR model directory
+  type: local_created
+- name: asr
+  source: local-wrappers
+  local_path: skills/asr
+  upstream_path: skills/asr
+  upstream_url: local
+  purpose: Transcribe audio and video files through Aliyun Model Studio Fun-ASR with speaker diarization.
+  depends_on:
+  - runtime/python
+  - apt/ffmpeg
+  notes:
+  - locally authored wrapper around Aliyun Model Studio non-realtime Fun-ASR
+  - defaults to host llm-plmvo15iruk58svw.cn-beijing.maas.aliyuncs.com and model fun-asr
   type: local_created
 - name: canvas-design
   source: anthropics-skills
