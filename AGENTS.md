@@ -1,0 +1,4 @@
+- Before using an unfamiliar `skills` subcommand, or when its syntax is uncertain, run `npx skills@latest <subcommand> --help` first.
+- Install skills with `npx skills@latest add <source> -g -y -a universal`.
+- Remove skills with `npx skills@latest remove <skill-name> -g -y`.
+- Keep required positional arguments immediately after the subcommand and place flags afterward. Do not run an incomplete command template without replacing placeholders.

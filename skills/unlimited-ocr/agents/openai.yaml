@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unlimited OCR"
+  short_description: "OCR and polish readable Markdown"
+  default_prompt: "Use $unlimited-ocr to OCR this PDF or image, then produce a corrected readable Markdown file."

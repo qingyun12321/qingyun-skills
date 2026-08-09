@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Agent skills (ignore all except project-managed skills)
+skills/*
+!skills/asr/
+!skills/restoration/
+!skills/unlimited-ocr/

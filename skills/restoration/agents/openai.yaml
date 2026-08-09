@@ -1,0 +1,4 @@
+interface:
+  display_name: "Restoration"
+  short_description: "HD sharpening and watermark removal"
+  default_prompt: "Use $restoration to sharpen and enhance my purchased image with $imagegen, remove the watermark when possible, preserve element positions when possible, and save the $imagegen output next to the source file or to Windows Pictures for pasted images."

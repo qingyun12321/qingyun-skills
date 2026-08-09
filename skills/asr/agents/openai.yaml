@@ -1,0 +1,4 @@
+interface:
+  display_name: "ASR"
+  short_description: "Aliyun Fun-ASR audio transcription"
+  default_prompt: "Use $asr to transcribe an audio or video file with speaker separation."
