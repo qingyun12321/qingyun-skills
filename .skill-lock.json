@@ -6,80 +6,72 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/check/SKILL.md",
-      "skillFolderHash": "c6f30609aad07e619a587a8e8c8409c4265a1a9a",
-      "pluginName": "waza-check",
+      "skillFolderHash": "ce64a78da2a63baa13a91ba1012f2a48f9bfc83a",
       "installedAt": "2026-08-09T06:00:59.466Z",
-      "updatedAt": "2026-08-09T06:00:59.466Z"
+      "updatedAt": "2026-09-06T04:51:05.883Z"
     },
     "health": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/health/SKILL.md",
-      "skillFolderHash": "89dd781525259560e9e7245825aa363a4138d11e",
-      "pluginName": "waza-health",
+      "skillFolderHash": "99dcc414a983c6a6acb38f2fc6b8475850dcda3a",
       "installedAt": "2026-08-09T06:00:59.468Z",
-      "updatedAt": "2026-08-09T06:00:59.468Z"
+      "updatedAt": "2026-09-06T04:51:08.161Z"
     },
     "hunt": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/hunt/SKILL.md",
-      "skillFolderHash": "b717fdf11016b7f34ac647ba56c4c64ee142fe53",
-      "pluginName": "waza-hunt",
+      "skillFolderHash": "c8e9a3e9238a39c675c198947acad98baca865b6",
       "installedAt": "2026-08-09T06:00:59.469Z",
-      "updatedAt": "2026-08-09T06:00:59.469Z"
+      "updatedAt": "2026-09-06T04:51:10.340Z"
     },
     "learn": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/learn/SKILL.md",
-      "skillFolderHash": "1aade816ebcb8917ed1a258e6b766731f829c0dc",
-      "pluginName": "waza-learn",
+      "skillFolderHash": "afa0ddb1a3b917561b4aa16a7380f0b832608782",
       "installedAt": "2026-08-09T06:00:59.469Z",
-      "updatedAt": "2026-08-09T06:00:59.469Z"
+      "updatedAt": "2026-09-06T04:51:12.446Z"
     },
     "read": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/read/SKILL.md",
-      "skillFolderHash": "20c840bd1ea5abb1fbf536205f00b6133a347c74",
-      "pluginName": "waza-read",
+      "skillFolderHash": "13d86e01f828487bfb548979ef1ebebcd4c197f8",
       "installedAt": "2026-08-09T06:00:59.470Z",
-      "updatedAt": "2026-08-09T06:00:59.470Z"
+      "updatedAt": "2026-09-06T04:51:14.606Z"
     },
     "think": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/think/SKILL.md",
-      "skillFolderHash": "a64d35b5883fc8847fb156131cbec88ac6e6d94a",
-      "pluginName": "waza-think",
+      "skillFolderHash": "94ff3b3967da65b78fac5da42a3fc355383910b2",
       "installedAt": "2026-08-09T06:00:59.471Z",
-      "updatedAt": "2026-08-09T06:00:59.471Z"
+      "updatedAt": "2026-09-06T04:51:16.687Z"
     },
     "ui": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/ui/SKILL.md",
-      "skillFolderHash": "2aa70da25b8807ae3721d03c60568c4895fe30b8",
-      "pluginName": "waza-ui",
+      "skillFolderHash": "cdf9f63196aef6cb49342569ff5fe8edc5cc6187",
       "installedAt": "2026-08-09T06:00:59.472Z",
-      "updatedAt": "2026-08-09T06:00:59.472Z"
+      "updatedAt": "2026-09-02T20:27:58.846Z"
     },
     "write": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/write/SKILL.md",
-      "skillFolderHash": "0a09f46fafe6ae5d12d9949315173383ffb16699",
-      "pluginName": "waza-write",
+      "skillFolderHash": "615d8f39c927c8d6b7203c1c4ffb6e52548cc33f",
       "installedAt": "2026-08-09T06:00:59.473Z",
-      "updatedAt": "2026-08-09T06:00:59.473Z"
+      "updatedAt": "2026-09-06T04:51:18.860Z"
     },
     "commit": {
       "source": "mitsuhiko/agent-stuff",
@@ -144,41 +136,90 @@
       "installedAt": "2026-08-09T06:45:01.875Z",
       "updatedAt": "2026-08-09T06:45:01.875Z"
     },
-    "kami": {
-      "source": "tw93/Kami",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/tw93/Kami.git",
-      "skillPath": "SKILL.md",
-      "skillFolderHash": "8bf6f46f74b5b640fa5612736a5cd24c724b7eca",
-      "installedAt": "2026-08-09T06:47:36.806Z",
-      "updatedAt": "2026-08-09T06:47:36.806Z"
-    },
     "officecli": {
       "source": "iOfficeAI/OfficeCLI",
       "sourceType": "github",
       "sourceUrl": "https://github.com/iOfficeAI/OfficeCLI.git",
       "skillPath": "SKILL.md",
-      "skillFolderHash": "459b1a473faf33f2f52e697ac6d265a3f67b176a",
+      "skillFolderHash": "1f0fd1930d14653b9a041f325a952cd23d336c51",
       "installedAt": "2026-08-09T06:51:25.101Z",
-      "updatedAt": "2026-08-09T06:51:25.101Z"
+      "updatedAt": "2026-09-11T06:52:45.638Z"
     },
     "herdr": {
       "source": "herdrdev/herdr",
       "sourceType": "github",
       "sourceUrl": "https://github.com/herdrdev/herdr.git",
       "skillPath": "skills/herdr/SKILL.md",
-      "skillFolderHash": "4821f1d39ccae24b9b274b03184edaaf198a3994",
+      "skillFolderHash": "b9dcfddcfa7ce43e2e4cf60e724c519be553f149",
       "installedAt": "2026-08-09T06:53:09.161Z",
-      "updatedAt": "2026-08-09T06:53:09.161Z"
+      "updatedAt": "2026-09-08T04:19:19.054Z"
     },
     "agentic-mermaid-diagram-workflow": {
       "source": "adewale/agentic-mermaid",
       "sourceType": "github",
       "sourceUrl": "https://github.com/adewale/agentic-mermaid.git",
       "skillPath": "skills/agentic-mermaid-diagram-workflow/SKILL.md",
-      "skillFolderHash": "137bb0d65aa5e89260b3c13c9083a82ada2ff5fb",
+      "skillFolderHash": "22655d449b43bceefdb6aff0b3db1f4c95e6b147",
       "installedAt": "2026-08-09T08:14:43.018Z",
-      "updatedAt": "2026-08-09T08:14:43.018Z"
+      "updatedAt": "2026-08-26T13:24:11.590Z"
+    },
+    "show-me": {
+      "source": "humanlayer/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/humanlayer/skills.git",
+      "skillPath": "plugins/show-me/skills/show-me/SKILL.md",
+      "skillFolderHash": "0bdb821a21e793a4f6f82a7078c052154447e5cc",
+      "installedAt": "2026-08-13T02:22:06.845Z",
+      "updatedAt": "2026-08-20T03:23:11.186Z"
+    },
+    "eli5": {
+      "source": "anthropics/claude-plugins-community",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/claude-plugins-community.git",
+      "ref": "main",
+      "skillPath": "eli5/skills/eli5/SKILL.md",
+      "skillFolderHash": "d16165120b7658216c79601b0ee568f42e540961",
+      "installedAt": "2026-08-26T13:27:07.406Z",
+      "updatedAt": "2026-08-26T13:27:07.406Z"
+    },
+    "kami": {
+      "source": "tw93/Kami",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/tw93/Kami.git",
+      "skillPath": "skills/kami/SKILL.md",
+      "skillFolderHash": "0acca8d61909b0ca167a76391371aea05cc29e83",
+      "installedAt": "2026-09-06T04:55:46.346Z",
+      "updatedAt": "2026-09-11T06:52:53.518Z"
+    },
+    "baoyu-infographic": {
+      "source": "JimLiu/baoyu-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/JimLiu/baoyu-skills.git",
+      "ref": "main",
+      "skillPath": "skills/baoyu-infographic/SKILL.md",
+      "skillFolderHash": "2fab9d3e5b9798d05e6b0ee7a156594f6b767f67",
+      "installedAt": "2026-09-06T19:20:22.270Z",
+      "updatedAt": "2026-09-08T04:19:23.046Z"
+    },
+    "i-have-adhd": {
+      "source": "ayghri/i-have-adhd",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ayghri/i-have-adhd.git",
+      "ref": "main",
+      "skillPath": "skills/i-have-adhd/SKILL.md",
+      "skillFolderHash": "72dc6e3e9d0f8d906579a235edb7b2a402d7b8e1",
+      "installedAt": "2026-09-10T22:20:24.796Z",
+      "updatedAt": "2026-09-10T22:20:24.796Z"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "ref": "main",
+      "skillPath": "skills/productivity/grilling/SKILL.md",
+      "skillFolderHash": "f0732035b8b1b60ae39454e4191caef32fa91903",
+      "installedAt": "2026-09-11T06:51:50.058Z",
+      "updatedAt": "2026-09-11T06:51:50.058Z"
     }
   },
   "dismissed": {}
