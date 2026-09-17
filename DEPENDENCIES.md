@@ -13,6 +13,8 @@ This file records the runtime relationship between the skills in this repository
 
 ## Skill to dependency index
 
+Bun is also installed as a user-requested shared JavaScript runtime and package manager. No existing skill requires it; Node.js remains available for the documented npm CLI workflows.
+
 | Skill | Managed dependencies | External or host dependencies |
 |---|---|---|
 | `agentic-mermaid-diagram-workflow` | Core: `node`, `npm:agentic-mermaid`. Optional: `jq` for shell validation pipelines. | Optional hosted MCP: `https://agentic-mermaid.dev/mcp`. |
@@ -49,6 +51,7 @@ This file records the runtime relationship between the skills in this repository
 
 | Dependency | Skills | Relationship |
 |---|---|---|
+| `bun` | Shared environment; no current skill requires it | User-requested optional JavaScript runtime and package manager. Managed by mise alongside Node.js. |
 | `uv` | `unlimited-ocr`, `uv` | Direct runtime dependency. It also bootstraps the shared Python environment used by Python-based skills. |
 | `node` | `agentic-mermaid-diagram-workflow`, `kami`, `officecli`, `read`, `ui` | Runtime for their npm CLIs and Kami's LaTeX-to-SVG renderer. Kami formulas require Node.js 20 or 22+ and the skill-owned MathJax runtime. Optional except where the selected path requires it. |
 | `ffmpeg` | `asr` | Required for local audio and video inputs. |
