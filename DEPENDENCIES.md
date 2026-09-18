@@ -5,7 +5,7 @@ This file records the runtime relationship between the skills in this repository
 ## Scope
 
 - `mise.toml` manages shared command-line tools and npm CLIs.
-- `pyproject.toml` manages direct Python packages. `uv.lock` records their transitive dependencies.
+- `pyproject.toml` manages direct Python packages. `uv.lock` records their transitive dependencies. The shared environment is `~/.agents/.venv`, this repository's default uv project environment. `mise.toml` adds its `bin` directory to PATH. The user-level mise configuration links to this file, exposing those commands outside this repository without overriding other projects' virtual environments.
 - Python itself is not pinned in `mise.toml`. Skills use the system Python when available, or a Python installation and virtual environment managed by `uv`.
 - `Core` means the normal skill path needs the dependency. `Optional` means only a specific format, platform, fallback, or integration needs it. Optional packages listed in the shared manifests are still installed by those managers.
 - Skill-owned runtimes with their own lockfiles are documented separately rather than duplicated in the shared manifests.
@@ -34,7 +34,7 @@ Bun is also installed as a user-requested shared JavaScript runtime and package 
 | `obsidian-bases` | None. | Obsidian application. Map views may also require the Obsidian Maps community plugin. |
 | `obsidian-cli` | None. | A running Obsidian application with its `obsidian` CLI available. |
 | `obsidian-markdown` | None. | Optional Obsidian application for rendering and validation. |
-| `officecli` | Core: `node`, `npm:@officecli/officecli`, `jq`. Optional: `npm:@mermaid-js/mermaid-cli`, `playwright`. | Optional Chrome, Chromium, Edge, or Firefox browser. Network access may be needed for renderer assets. |
+| `officecli` | Core: `node`, `npm:@officecli/officecli`, `jq`. Optional CLI: `npm:@mermaid-js/mermaid-cli`. Optional Python: `playwright`. | Screenshots require a supported browser; the shared setup uses Playwright-managed Chromium and Ubuntu native libraries including `libasound2t64`. Chinese rendering uses `fonts-noto-cjk`. PDF export requires a separate exporter plugin. Network access may be needed for renderer assets. |
 | `read` | Optional Python: `readability-lxml`, `html2text` for higher-quality local extraction; `requests`, `playwright`, `beautifulsoup4`, `lxml`, `pypdf` for specific input types. Optional CLI: `node`, `npm:@larksuite/cli`, `gh`. | Host web-fetch capability; Python runtime and `curl` for local scripts. Optional Chromium for Playwright, Poppler tools, Feishu credentials, and network access. The local extractor has a standard-library fallback. Proxy mode uses the `defuddle.md` and `r.jina.ai` HTTP services only with user opt-in; no Defuddle CLI is required. |
 | `restoration` | None. | Python runtime and the host-provided `imagegen` capability. |
 | `show-me` | None. | A browser and platform file opener for HTML output; a host Mermaid renderer for Mermaid output. |
@@ -73,7 +73,7 @@ Bun is also installed as a user-requested shared JavaScript runtime and package 
 | `html2text` | `read` | Optional higher-quality local extraction: converts extracted HTML into Markdown. |
 | `lxml` | `read` | HTML parsing and cleanup for the WeChat and readability paths. |
 | `numpy` | `kami` | Optional acceleration for PDF page-density analysis. |
-| `playwright` | `read`, `officecli` | Browser automation for the WeChat fallback and optional OfficeCLI screenshots. A browser installation is still required. |
+| `playwright` | `read`, `officecli` | Browser automation for the WeChat fallback and optional OfficeCLI screenshots. Installed by uv; its CLI is exposed through mise's PATH configuration. Chromium is downloaded separately with `playwright install chromium`. |
 | `pygments` | `kami` | Optional syntax highlighting for code blocks. |
 | `pymupdf` | `kami` | PDF rasterization, visual review, density checks, and font-use inspection. |
 | `pypdf` | `kami`, `read` | PDF metadata and page checks in Kami, plus local PDF text extraction fallback in Read. |
@@ -112,7 +112,9 @@ These are locked by `uv.lock`; they should not be added to `pyproject.toml` unle
 | Poppler tools | `kami`, `read` | Optional `pdffonts` and `pdftotext` capabilities installed at the OS level. |
 | Cairo, Pango, HarfBuzz | `kami` | Native WeasyPrint libraries installed by the operating system. |
 | `rsvg-convert` | `kami` | Optional librsvg system tool for SVG to PNG conversion before DOCX export. |
-| Chromium or another supported browser | `officecli`, `read` | Browser binary and data are installed separately from the Python Playwright package. |
+| Chromium or another supported browser | `officecli`, `read` | The shared setup uses Playwright's Chromium installation in `~/.cache/ms-playwright`, separate from the uv-managed Python package. Chromium is not a mise tool; ChromeDriver is not a browser substitute. |
+| Chromium native libraries | `officecli`, `read` | Installed by the operating system. Ubuntu's `libasound2t64` supplies `libasound.so.2`; other required libraries depend on the host. |
+| Noto CJK fonts | `officecli`, `kami`, `read` | Ubuntu's `fonts-noto-cjk` provides Noto Sans CJK and Noto Serif CJK, including fontconfig rules for language-specific glyphs. Fonts are system assets, not mise tools or Python packages. |
 | Obsidian | `json-canvas`, `obsidian-bases`, `obsidian-cli`, `obsidian-markdown` | Desktop host application. |
 | Herdr | `herdr` | Host terminal multiplexer with its own session environment. |
 | DashScope API and credentials | `asr` | External service configured with `DASHSCOPE_API_KEY`. |
@@ -121,6 +123,25 @@ These are locked by `uv.lock`; they should not be added to `pyproject.toml` unle
 | Mermaid renderer | `show-me` | Host capability for displaying Mermaid output; no specific CLI is prescribed. |
 | Subagent capability | `grilling` | Supplied by the agent host for environment fact-finding. |
 | Unlimited-OCR repository, model, CUDA, and GPU | `unlimited-ocr` | Dedicated external ML environment that owns its own dependencies. |
+
+## Browser and Chinese font setup
+
+On Ubuntu, install the native audio library and Chinese fonts with the system package manager:
+
+```bash
+sudo apt-get install libasound2t64 fonts-noto-cjk
+```
+
+Install the browser revision required by the locked Python Playwright package:
+
+```bash
+uv sync --project "$HOME/.agents" --locked
+uv run --project "$HOME/.agents" --locked playwright install chromium
+```
+
+Repeat the browser installation after updating Playwright. On a new host, `playwright install-deps chromium` can install the remaining native browser dependencies and requires administrator access. Keep these libraries under the system package manager.
+
+OfficeCLI discovers the `playwright` executable through PATH. Use a mise-activated shell or `mise exec -- officecli ...` so the shared environment's command directory is visible. Installing the browser does not provide OfficeCLI's PDF exporter plugin.
 
 ## Maintenance rule
 

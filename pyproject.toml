@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.15.0",
+    "hound-mcp[all]>=13.2.0",
     "html2text>=2025.4.15",
     "lxml>=6.1.1",
     "numpy>=2.5.1",

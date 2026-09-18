@@ -1,14 +1,25 @@
+[settings]
+auto_update = true
+minimum_release_age = "0s"
+
+[env]
+_.path = ["{{env.HOME}}/.agents/.venv/bin"]
+
 [tools]
-uv = "latest"
-node = "latest"
+bun = "latest"
 ffmpeg = "latest"
 gh = "latest"
+"github:DetachHead/rebased" = { version = "latest", asset_pattern = "rebased.tar.gz", strip_components = "1", bin_path = "bin" }
+herdr = "latest"
 jq = "latest"
-pandoc = "latest"
-"npm:agentic-mermaid" = "latest"
+node = "latest"
 "npm:@larksuite/cli" = "latest"
 "npm:@marp-team/marp-cli" = "latest"
 "npm:@mermaid-js/mermaid-cli" = "latest"
 "npm:@officecli/officecli" = "latest"
+"npm:agentic-mermaid" = { version = "latest", allow_low_downloads = true }
 "npm:getdesign" = "latest"
-bun = "latest"
+"npm:pi-acp" = "latest"
+pandoc = "latest"
+pi = "latest"
+uv = "latest"

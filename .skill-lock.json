@@ -6,72 +6,72 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/check/SKILL.md",
-      "skillFolderHash": "23d47f8ceea682e04e9f3f3cb177e03800e9966b",
+      "skillFolderHash": "fa79bf16eda168ea6d3773a704d7c00609b88eb8",
       "installedAt": "2026-08-09T06:00:59.466Z",
-      "updatedAt": "2026-09-17T01:20:40.411Z"
+      "updatedAt": "2026-09-18T02:08:37.907Z"
     },
     "health": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/health/SKILL.md",
-      "skillFolderHash": "99dcc414a983c6a6acb38f2fc6b8475850dcda3a",
+      "skillFolderHash": "c78888b10a05c0c7f97878a803a5debac0087e86",
       "installedAt": "2026-08-09T06:00:59.468Z",
-      "updatedAt": "2026-09-17T01:20:43.102Z"
+      "updatedAt": "2026-09-18T02:08:40.842Z"
     },
     "hunt": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/hunt/SKILL.md",
-      "skillFolderHash": "c8e9a3e9238a39c675c198947acad98baca865b6",
+      "skillFolderHash": "a0156e060b3889f9c3553e7b1c66710cd2044fa9",
       "installedAt": "2026-08-09T06:00:59.469Z",
-      "updatedAt": "2026-09-17T01:20:45.825Z"
+      "updatedAt": "2026-09-18T02:08:43.498Z"
     },
     "learn": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/learn/SKILL.md",
-      "skillFolderHash": "afa0ddb1a3b917561b4aa16a7380f0b832608782",
+      "skillFolderHash": "e83718077248a2a706ed29f6489a2d8c15720f44",
       "installedAt": "2026-08-09T06:00:59.469Z",
-      "updatedAt": "2026-09-17T01:20:48.226Z"
+      "updatedAt": "2026-09-18T02:08:46.365Z"
     },
     "read": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/read/SKILL.md",
-      "skillFolderHash": "d5842b162bf3a092112d1ecd09ac6909422430ae",
+      "skillFolderHash": "5cc59b08bb70d659330800608fb187180459cd81",
       "installedAt": "2026-08-09T06:00:59.470Z",
-      "updatedAt": "2026-09-17T01:20:50.742Z"
+      "updatedAt": "2026-09-18T02:08:49.431Z"
     },
     "think": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/think/SKILL.md",
-      "skillFolderHash": "94ff3b3967da65b78fac5da42a3fc355383910b2",
+      "skillFolderHash": "6dd15ee4f7a0b28e393f1e3b654de80214a0bb4c",
       "installedAt": "2026-08-09T06:00:59.471Z",
-      "updatedAt": "2026-09-17T01:20:53.281Z"
+      "updatedAt": "2026-09-18T02:08:52.174Z"
     },
     "ui": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/ui/SKILL.md",
-      "skillFolderHash": "27214b58f1f75dc7f39e1cdae2e9bf0d71891f55",
+      "skillFolderHash": "0fc80c9fb95e5b3872727f6e5f81c3ed482bc691",
       "installedAt": "2026-08-09T06:00:59.472Z",
-      "updatedAt": "2026-09-17T01:20:55.887Z"
+      "updatedAt": "2026-09-18T02:08:54.944Z"
     },
     "write": {
       "source": "tw93/Waza",
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Waza.git",
       "skillPath": "skills/write/SKILL.md",
-      "skillFolderHash": "534a82ae7db9499b6cf6f3289b5c8f7655b72453",
+      "skillFolderHash": "c81e3dcf162536ae630fa65099c91f5201c6d8ff",
       "installedAt": "2026-08-09T06:00:59.473Z",
-      "updatedAt": "2026-09-17T01:20:58.541Z"
+      "updatedAt": "2026-09-18T02:08:57.789Z"
     },
     "commit": {
       "source": "mitsuhiko/agent-stuff",
@@ -168,9 +168,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/humanlayer/skills.git",
       "skillPath": "plugins/show-me/skills/show-me/SKILL.md",
-      "skillFolderHash": "0bdb821a21e793a4f6f82a7078c052154447e5cc",
+      "skillFolderHash": "362200ac2fb3c17b765049444e88de73767e6d08",
       "installedAt": "2026-08-13T02:22:06.845Z",
-      "updatedAt": "2026-09-17T01:21:53.751Z"
+      "updatedAt": "2026-09-18T02:09:00.615Z"
     },
     "eli5": {
       "source": "anthropics/claude-plugins-community",
@@ -187,9 +187,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/tw93/Kami.git",
       "skillPath": "skills/kami/SKILL.md",
-      "skillFolderHash": "61adadf722e9248f0a51e9013f7d5876a25be877",
+      "skillFolderHash": "66bb22391a01581d76de574adc06abf3cda772c2",
       "installedAt": "2026-09-06T04:55:46.346Z",
-      "updatedAt": "2026-09-17T01:22:07.164Z"
+      "updatedAt": "2026-09-18T02:09:12.351Z"
     },
     "baoyu-infographic": {
       "source": "JimLiu/baoyu-skills",
