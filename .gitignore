@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# JetBrains IDE configuration
+/.idea/
+
 # Agent skills (ignore all except project-managed skills)
 skills/*
 !skills/asr/
